@@ -9,15 +9,15 @@ export default class BootScene extends Phaser.Scene {
   }
 
   preload() {
-    this.load.image('room1-bg', '/src/assets/math-bg.jpg');
-    this.load.image('room2-bg', '/src/assets/room2-bg.jpg');
-    this.load.image('room3-bg', '/src/assets/room3-bg.jpg');
-    this.load.image('room4-bg', '/src/assets/room4-bg.jpg');
-    this.load.image('treasure-bg', '/src/assets/treasure-bg.png');
-    this.load.image('hero',     '/src/assets/characters/hero.png');
-    this.load.image('hero-lv2', '/src/assets/characters/hero-lv2.png');
-    this.load.image('hero-lv3', '/src/assets/characters/hero-lv3.png');
-    this.load.image('hero-lv4', '/src/assets/characters/hero-lv4.png');
+    this.load.image('room1-bg', '/assets/math-bg.jpg');
+    this.load.image('room2-bg', '/assets/room2-bg.jpg');
+    this.load.image('room3-bg', '/assets/room3-bg.jpg');
+    this.load.image('room4-bg', '/assets/room4-bg.jpg');
+    this.load.image('treasure-bg', '/assets/treasure-bg.png');
+    this.load.image('hero',     '/assets/characters/hero.png');
+    this.load.image('hero-lv2', '/assets/characters/hero-lv2.png');
+    this.load.image('hero-lv3', '/assets/characters/hero-lv3.png');
+    this.load.image('hero-lv4', '/assets/characters/hero-lv4.png');
   }
 
   create() {
