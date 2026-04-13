@@ -1,0 +1,36 @@
+{
+  "name": "mumusubject",
+  "version": "0.1.0",
+  "description": "수학 마법사의 탑 - 교육용 JRPG",
+  "main": "electron.js",
+  "scripts": {
+    "dev": "vite",
+    "build": "vite build",
+    "preview": "vite preview",
+    "electron": "electron .",
+    "dist": "npm run build && electron-builder --win"
+  },
+  "build": {
+    "appId": "com.mumusubject.game",
+    "productName": "수학 마법사의 탑",
+    "files": [
+      "dist/**/*",
+      "electron.js"
+    ],
+    "win": {
+      "target": "portable",
+      "icon": "dist/favicon.ico"
+    }
+  },
+  "dependencies": {
+    "phaser": "^3.55.2",
+    "socket.io-client": "^4.5.0"
+  },
+  "devDependencies": {
+    "@vitejs/plugin-basic-ssl": "^1.0.0",
+    "electron": "^41.2.0",
+    "electron-builder": "^26.8.1",
+    "sharp": "^0.34.5",
+    "vite": "^4.0.0"
+  }
+}

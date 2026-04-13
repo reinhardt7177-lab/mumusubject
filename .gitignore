@@ -1,0 +1,39 @@
+# Dependencies
+node_modules/
+package-lock.json
+yarn.lock
+
+# Environment
+.env
+.env.local
+.env.*.local
+
+# Build outputs
+dist/
+build/
+
+# IDE
+.vscode/
+.idea/
+*.swp
+*.swo
+*~
+
+# OS
+.DS_Store
+Thumbs.db
+
+# Logs
+logs/
+*.log
+npm-debug.log*
+
+# Generated temp assets
+scripts/temp/
+
+# Duplicate resized assets in assets root
+client/src/assets/hero*.png
+client/src/assets/hero*_128x128.png
+client/src/assets/player-lv*.png
+client/src/assets/Gemini_*.jpg
+client/src/assets/trasure room.png

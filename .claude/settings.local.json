@@ -1,0 +1,9 @@
+{
+  "permissions": {
+    "allow": [
+      "Bash(curl -s http://localhost:5174)",
+      "Bash(curl -si http://localhost:5174/)",
+      "Bash(node -e \"const fs = require\\('fs'\\); const code = fs.readFileSync\\('c:/Users/이준용/mumusubject/client/src/scenes/BootScene.js', 'utf8'\\); try { new Function\\(code\\); console.log\\('OK'\\); } catch\\(e\\) { console.log\\('SyntaxError:', e.message\\); }\")"
+    ]
+  }
+}

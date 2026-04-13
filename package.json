@@ -1,0 +1,7 @@
+{
+  "type": "module",
+  "dependencies": {
+    "sharp": "^0.34.5",
+    "@google/generative-ai": "^0.24.0"
+  }
+}
