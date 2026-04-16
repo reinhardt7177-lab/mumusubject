@@ -121,6 +121,7 @@ export default class MathScene extends Phaser.Scene {
 
     // ── 디버그: 다음 방 스킵 버튼 ──────────────────────────
     this._addSkipButton();
+    this._addFullscreenButton();
   }
 
   // ─── 학년 선택 UI ─────────────────────────────────────────
@@ -1381,6 +1382,35 @@ export default class MathScene extends Phaser.Scene {
         }
       }
     });
+  }
+
+  // ─── 전체화면 버튼 ───────────────────────────────────────
+  _addFullscreenButton() {
+    const SIZE = 36;
+    const MARGIN = 8;
+    const x = MARGIN + SIZE / 2;
+    const y = MARGIN + SIZE / 2;
+
+    const bg = this.add.rectangle(x, y, SIZE, SIZE, 0x000000, 0.45)
+      .setDepth(99).setScrollFactor(0).setInteractive({ useHandCursor: true });
+
+    const icon = this.add.text(x, y, '⛶', {
+      fontSize: '20px', color: '#ffffff',
+    }).setOrigin(0.5).setDepth(100).setScrollFactor(0);
+
+    const toggle = () => {
+      if (this.scale.isFullscreen) {
+        this.scale.stopFullscreen();
+        icon.setText('⛶');
+      } else {
+        this.scale.startFullscreen();
+        icon.setText('✕');
+      }
+    };
+
+    bg.on('pointerdown', toggle);
+    bg.on('pointerover', () => bg.setAlpha(0.75));
+    bg.on('pointerout',  () => bg.setAlpha(0.45));
   }
 
   // ─── 게임 오버 (HP 0) ────────────────────────────────────
