@@ -109,9 +109,7 @@ export default class MathScene extends Phaser.Scene {
     this.cursors = this.input.keyboard.createCursorKeys();
     this._setupKeyboard();
     this._createDustEmitter();
-
-    // 비밀 문 (방 2에 항상 표시)
-    this._showSecretDoor();
+    this._setupJoystick();
 
     if (this._fromRoom) {
       // 방 이동: 학년 선택 없이 바로 시작 + 페이드인
@@ -470,10 +468,20 @@ export default class MathScene extends Phaser.Scene {
     // 대결 중에는 이동 불가
     if (!this.inBattle) {
       const p = this.player;
+      const joy = this.joystick;
+
+      // 키보드
       if (this.cursors.left.isDown)  p.x -= PLAYER_SPEED;
       if (this.cursors.right.isDown) p.x += PLAYER_SPEED;
       if (this.cursors.up.isDown)    p.y -= PLAYER_SPEED;
       if (this.cursors.down.isDown)  p.y += PLAYER_SPEED;
+
+      // 조이스틱 (터치)
+      if (joy.active) {
+        p.x += joy.dx * PLAYER_SPEED;
+        p.y += joy.dy * PLAYER_SPEED;
+      }
+
       p.x = Phaser.Math.Clamp(p.x, 50, 750);
       p.y = Phaser.Math.Clamp(p.y, 105, 555);
     }
@@ -956,6 +964,9 @@ export default class MathScene extends Phaser.Scene {
     }).setOrigin(0.5).setDepth(9);
 
     this._floatText(400, 300, '출구가 열렸다!', '#ffffff', 30);
+
+    // 비밀 문 활성화 (방 2)
+    this._showSecretDoor();
   }
 
   _enterNextRoom() {
@@ -1195,6 +1206,57 @@ export default class MathScene extends Phaser.Scene {
   }
 
   // ─── 디버그 스킵 버튼 ────────────────────────────────────
+  // ─── 모바일 가상 조이스틱 ────────────────────────────────────
+  _setupJoystick() {
+    const BASE_R  = 52;   // 베이스 반지름
+    const KNOB_R  = 26;   // 핸들 반지름
+    const MAX_D   = 40;   // 최대 드래그 거리
+    const BX = 110, BY = 500; // 베이스 위치 (왼쪽 하단)
+
+    this.joystick = { active: false, dx: 0, dy: 0 };
+
+    // 베이스 (항상 표시)
+    this.add.circle(BX, BY, BASE_R, 0x000000, 0.30)
+      .setDepth(90).setScrollFactor(0);
+    this.add.circle(BX, BY, BASE_R, 0xffffff, 0.10)
+      .setDepth(90).setScrollFactor(0)
+      .setStrokeStyle(2, 0xffffff, 0.35);
+
+    // 핸들
+    const knob = this.add.circle(BX, BY, KNOB_R, 0xffffff, 0.55)
+      .setDepth(91).setScrollFactor(0);
+
+    // 터치 인풋 영역 (베이스 2배 크기로 여유있게)
+    const zone = this.add.circle(BX, BY, BASE_R * 2, 0xffffff, 0)
+      .setDepth(92).setScrollFactor(0).setInteractive();
+
+    zone.on('pointerdown', (ptr) => {
+      this.joystick.active = true;
+      this._updateJoystick(ptr, BX, BY, MAX_D, knob);
+    });
+    this.input.on('pointermove', (ptr) => {
+      if (!this.joystick.active) return;
+      this._updateJoystick(ptr, BX, BY, MAX_D, knob);
+    });
+    this.input.on('pointerup', () => {
+      this.joystick.active = false;
+      this.joystick.dx = 0;
+      this.joystick.dy = 0;
+      knob.setPosition(BX, BY);
+    });
+  }
+
+  _updateJoystick(ptr, bx, by, maxD, knob) {
+    const dx  = ptr.x - bx;
+    const dy  = ptr.y - by;
+    const len = Math.sqrt(dx * dx + dy * dy) || 1;
+    const clamped = Math.min(len, maxD);
+    const nx = dx / len, ny = dy / len;
+    knob.setPosition(bx + nx * clamped, by + ny * clamped);
+    this.joystick.dx = nx * (clamped / maxD);
+    this.joystick.dy = ny * (clamped / maxD);
+  }
+
   _addSkipButton() {
     const btn = this.add.text(760, 590, '[SKIP→]', {
       fontSize: '13px', color: '#ff4444',
