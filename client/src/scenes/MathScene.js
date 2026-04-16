@@ -77,13 +77,23 @@ export default class MathScene extends Phaser.Scene {
     super('MathScene');
   }
 
+  // ─── URL 파라미터로 학년 자동 감지 ─────────────────────────
+  _gradeFromURL() {
+    const p = new URLSearchParams(window.location.search).get('grade');
+    if (p === '34') return GRADES.G34;
+    if (p === '56') return GRADES.G56;
+    if (p === '12') return GRADES.G12;
+    return null; // 파라미터 없으면 학년 선택 화면
+  }
+
   // ─── Phaser 데이터 수신 (create 이전에 호출됨) ────────────
   init(data) {
     this.room          = data.room  || 1;
     this.stats         = data.stats || { level: 1, exp: 0, expToNext: 50, coins: 0, hp: 5, maxHp: 5 };
-    this.grade         = data.grade || GRADES.G12;
-    this._fromRoom     = !!data.room;   // 방 이동으로 왔는지 여부
-    this._fromTreasure = data.fromRoom || null; // 보물방 → 복귀 방 번호
+    this.grade         = data.grade || this._gradeFromURL() || GRADES.G12;
+    this._fromRoom     = !!data.room;
+    this._fromTreasure = data.fromRoom || null;
+    this._urlGrade     = !data.room ? this._gradeFromURL() : null; // 첫 진입 시만
   }
 
   // ─── 씬 생성 ─────────────────────────────────────────────
@@ -111,10 +121,10 @@ export default class MathScene extends Phaser.Scene {
     this._createDustEmitter();
     this._setupJoystick();
 
-    if (this._fromRoom) {
-      // 방 이동: 학년 선택 없이 바로 시작 + 페이드인
+    if (this._fromRoom || this._urlGrade) {
+      // 방 이동 또는 URL 파라미터: 학년 선택 없이 바로 시작
       this.cameras.main.fadeIn(600);
-      this._startGame(this.grade);
+      this._startGame(this._urlGrade || this.grade);
     } else {
       this._showGradeSelector();
     }
