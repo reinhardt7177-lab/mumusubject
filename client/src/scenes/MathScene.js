@@ -130,7 +130,6 @@ export default class MathScene extends Phaser.Scene {
     }
 
     // ── 디버그: 다음 방 스킵 버튼 ──────────────────────────
-    this._addSkipButton();
     this._addFullscreenButton();
   }
 
@@ -1369,30 +1368,6 @@ export default class MathScene extends Phaser.Scene {
     this.joystick.dy = ny * (clamped / maxD);
   }
 
-  _addSkipButton() {
-    const btn = this.add.text(760, 590, '[SKIP→]', {
-      fontSize: '13px', color: '#ff4444',
-      stroke: '#000', strokeThickness: 3,
-      fontFamily: 'monospace',
-    }).setOrigin(1, 1).setDepth(99).setInteractive({ useHandCursor: true });
-
-    btn.on('pointerdown', () => {
-      if (ROOM_CONFIG[this.room + 1]) {
-        this.transitioning = false;
-        this._enterNextRoom();
-      } else {
-        // 보스방 스킵: 변신 연출 후 클리어
-        const boss = this.monsters.find(m => m.isBoss && m.alive);
-        if (boss) {
-          boss.alive = false;
-          this._deselect();
-          this._bossTransform(boss);
-        } else {
-          this._gameClear();
-        }
-      }
-    });
-  }
 
   // ─── 전체화면 버튼 ───────────────────────────────────────
   _addFullscreenButton() {
