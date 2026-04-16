@@ -575,6 +575,7 @@ export default class MathScene extends Phaser.Scene {
     // 대결 오버레이 생성
     this._createBattleOverlay(monster);
     this._floatText(400, 170, `⚔  ${MONSTER_NAMES[monster.type]}`, '#ff6688', 32);
+    this._showNumpad();
   }
 
   _exitBattle() {
@@ -608,6 +609,7 @@ export default class MathScene extends Phaser.Scene {
 
     this.problemText.setText('몬스터에게 가까이 가면 문제가 나타납니다!');
     this.inputDisplay.setText('');
+    this._hideNumpad();
   }
 
   // ─── 대결 오버레이 UI ─────────────────────────────────────
@@ -1135,6 +1137,7 @@ export default class MathScene extends Phaser.Scene {
     if (ch.keyHandler) this.input.keyboard.off('keydown', ch.keyHandler);
     ch.keyHandler = (e) => this._handlePedestalInput(e);
     this.input.keyboard.on('keydown', ch.keyHandler);
+    this._showNumpad();
   }
 
   _handlePedestalInput(e) {
@@ -1168,6 +1171,7 @@ export default class MathScene extends Phaser.Scene {
     if (ch.current >= 5) {
       this.input.keyboard.off('keydown', ch.keyHandler);
       ch.overlay.destroy();
+      this._hideNumpad();
       this.time.delayedCall(600, () => this._finishPedestalChallenge());
     } else {
       this.time.delayedCall(400, () => this._showPedestalQuestion());
@@ -1206,6 +1210,103 @@ export default class MathScene extends Phaser.Scene {
   }
 
   // ─── 디버그 스킵 버튼 ────────────────────────────────────
+  // ─── 모바일 숫자 키패드 ──────────────────────────────────────
+  _createNumpadOnce() {
+    if (this.numpadContainer) return;
+
+    const BW = 64, BH = 52, GAP = 6;
+    const COLS = 3;
+    const startX = 800 - (BW * COLS + GAP * (COLS - 1)) - 12;
+    const startY = 310;
+
+    const keys = [
+      '7','8','9',
+      '4','5','6',
+      '1','2','3',
+      '⌫','0','✓',
+    ];
+
+    this.numpadContainer = this.add.container(0, 0).setDepth(95).setAlpha(0);
+
+    // 배경 패널
+    const panelW = BW * COLS + GAP * (COLS - 1) + 24;
+    const panelH = BH * 4  + GAP * 3  + 24;
+    this.numpadContainer.add(
+      this.add.rectangle(startX - 12 + panelW / 2, startY - 12 + panelH / 2, panelW, panelH, 0x0d0d1e, 0.88)
+    );
+
+    keys.forEach((k, i) => {
+      const col = i % COLS;
+      const row = Math.floor(i / COLS);
+      const bx  = startX + col * (BW + GAP) + BW / 2;
+      const by  = startY + row * (BH + GAP) + BH / 2;
+
+      const isEnter = k === '✓';
+      const isDel   = k === '⌫';
+      const color   = isEnter ? 0x1a5c1a : isDel ? 0x5c1a1a : 0x223355;
+      const border  = isEnter ? 0x44ff44 : isDel ? 0xff4444 : 0x4466aa;
+
+      const btn = this.add.rectangle(bx, by, BW, BH, color, 0.95)
+        .setStrokeStyle(2, border, 0.8)
+        .setInteractive({ useHandCursor: true });
+      const lbl = this.add.text(bx, by, k, {
+        fontSize: isEnter || isDel ? '20px' : '24px',
+        color: '#ffffff', fontFamily: 'monospace', fontStyle: 'bold',
+      }).setOrigin(0.5);
+
+      btn.on('pointerdown', () => {
+        btn.setAlpha(0.5);
+        this._numpadInput(k);
+      });
+      btn.on('pointerup',   () => btn.setAlpha(1));
+      btn.on('pointerout',  () => btn.setAlpha(1));
+
+      this.numpadContainer.add([btn, lbl]);
+    });
+  }
+
+  _numpadInput(k) {
+    // 일반 전투 입력
+    if (this.inBattle && this.selectedMonster) {
+      if (k === '⌫') {
+        this.answer = this.answer.slice(0, -1);
+      } else if (k === '✓') {
+        if (this.answer.length > 0) this._checkAnswer();
+      } else if (this.answer.length < 5) {
+        this.answer += k;
+      }
+      this._refreshInput();
+      return;
+    }
+    // 제단 챌린지 입력
+    const ch = this.pedestalChallenge;
+    if (ch) {
+      if (k === '⌫') {
+        ch.inputText = ch.inputText.slice(0, -1);
+        ch.inputDisplay.setText(`답: ${ch.inputText || ''}_`);
+      } else if (k === '✓') {
+        if (ch.inputText.length > 0) this._submitPedestalAnswer();
+      } else if (ch.inputText.length < 5) {
+        ch.inputText += k;
+        ch.inputDisplay.setText(`답: ${ch.inputText}_`);
+      }
+    }
+  }
+
+  _showNumpad() {
+    this._createNumpadOnce();
+    this.numpadContainer.setVisible(true);
+    this.tweens.add({ targets: this.numpadContainer, alpha: 1, duration: 150 });
+  }
+
+  _hideNumpad() {
+    if (!this.numpadContainer) return;
+    this.tweens.add({
+      targets: this.numpadContainer, alpha: 0, duration: 150,
+      onComplete: () => this.numpadContainer?.setVisible(false),
+    });
+  }
+
   // ─── 모바일 가상 조이스틱 ────────────────────────────────────
   _setupJoystick() {
     const BASE_R  = 52;   // 베이스 반지름
