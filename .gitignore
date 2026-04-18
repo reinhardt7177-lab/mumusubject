@@ -31,6 +31,9 @@ npm-debug.log*
 # Generated temp assets
 scripts/temp/
 
+# Claude Code worktrees (embedded git repos)
+mumuculing/
+
 # Duplicate resized assets in assets root
 client/src/assets/hero*.png
 client/src/assets/hero*_128x128.png
