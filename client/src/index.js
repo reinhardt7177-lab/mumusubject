@@ -22,13 +22,6 @@ const config = {
     pixelArt: true,
     antialias: false,
   },
-  physics: {
-    default: 'arcade',
-    arcade: {
-      gravity: { y: 0 },
-      debug: false
-    }
-  },
   scene: [
     BootScene,
     MathScene,

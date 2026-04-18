@@ -934,7 +934,7 @@ export default class MathScene extends Phaser.Scene {
       });
     }
 
-    const tierNames = { 'player-lv1': '견습 마법사', 'player-lv2': '숙련 마법사', 'player-lv3': '고급 마법사', 'player-lv4': '전설 마법사' };
+    const tierNames = { 'hero': '견습 마법사', 'hero-lv2': '숙련 마법사', 'hero-lv3': '고급 마법사', 'hero-lv4': '전설 마법사' };
     const tierMsg = newTex !== prevTex ? ` [${tierNames[newTex]}]` : '';
     this._floatText(400, 250, `★ Lv.${this.stats.level} UP!${tierMsg} ★`, '#FFD700', 34);
     this.cameras.main.flash(280, 255, 210, 0, true);
