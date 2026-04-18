@@ -1337,13 +1337,14 @@ export default class MathScene extends Phaser.Scene {
     const knob = this.add.circle(BX, BY, KNOB_R, 0xffffff, 0.55)
       .setDepth(91).setScrollFactor(0);
 
-    // 터치 인풋 영역 (베이스 2배 크기로 여유있게)
-    const zone = this.add.circle(BX, BY, BASE_R * 2, 0xffffff, 0)
-      .setDepth(92).setScrollFactor(0).setInteractive();
-
-    zone.on('pointerdown', (ptr) => {
-      this.joystick.active = true;
-      this._updateJoystick(ptr, BX, BY, MAX_D, knob);
+    // 터치 인풋: zone.setInteractive() 는 scene.start() 재시작 후 동작하지 않으므로
+    // 직접 scene input 이벤트에서 거리 계산으로 판별
+    this.input.on('pointerdown', (ptr) => {
+      const dx = ptr.x - BX, dy = ptr.y - BY;
+      if (Math.sqrt(dx * dx + dy * dy) < BASE_R * 2) {
+        this.joystick.active = true;
+        this._updateJoystick(ptr, BX, BY, MAX_D, knob);
+      }
     });
     this.input.on('pointermove', (ptr) => {
       if (!this.joystick.active) return;
