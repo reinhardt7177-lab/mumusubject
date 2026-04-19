@@ -53,365 +53,240 @@ export default class BootScene extends Phaser.Scene {
     this._makeBossGoodMonster();
   }
 
-  // 슬라임 — 친근한 주황 + 형태
+  // 슬라임 — 초록 젤리 몸체, 귀엽고 통통
   _makeSlimeMonster() {
     const g = this.add.graphics();
-
     // 그림자
-    g.fillStyle(0x000000, 0.20);
-    g.fillEllipse(40, 77, 44, 9);
-
-    // 글로우
-    g.fillStyle(0xffaa00, 0.14);
-    g.fillCircle(40, 42, 36);
-
-    // ── + 기호가 몸통 (세로 막대) ─────────────────────────────
-    g.fillStyle(0xcc5500);
-    g.fillRoundedRect(33, 13, 14, 56, 6);
-    // + 가로 막대
-    g.fillRoundedRect(14, 35, 52, 14, 6);
-    // 메인 색 세로
-    g.fillStyle(0xff8800);
-    g.fillRoundedRect(35, 15, 10, 52, 5);
-    // 메인 색 가로
-    g.fillStyle(0xff8800);
-    g.fillRoundedRect(16, 37, 48, 10, 5);
-    // 하이라이트
-    g.fillStyle(0xffcc44, 0.55);
-    g.fillRoundedRect(37, 15, 6, 22, 3);
-    g.fillRoundedRect(16, 38, 22, 4, 2);
-    g.fillStyle(0xffffff, 0.22);
-    g.fillRoundedRect(37, 16, 4, 12, 2);
-    g.fillRoundedRect(17, 38, 10, 2, 1);
-
-    // ── 손 (가로 막대 끝) ─────────────────────────────────────
-    g.fillStyle(0xcc5500);
-    g.fillCircle(14, 42, 9); g.fillCircle(66, 42, 9);
-    g.fillStyle(0xff8800);
-    g.fillCircle(14, 41, 8); g.fillCircle(66, 41, 8);
-    g.fillStyle(0xffcc44, 0.45);
-    g.fillCircle(12, 39, 4); g.fillCircle(64, 39, 4);
-
-    // ── 발 (세로 막대 아래 끝) ────────────────────────────────
-    g.fillStyle(0xcc5500);
-    g.fillCircle(35, 70, 8); g.fillCircle(45, 70, 8);
-    g.fillStyle(0xff6600);
-    g.fillCircle(35, 69, 7); g.fillCircle(45, 69, 7);
-
-    // ── 얼굴 (교차 중심에) ────────────────────────────────────
+    g.fillStyle(0x000000, 0.22); g.fillEllipse(40, 76, 46, 10);
+    // 외곽 글로우
+    g.fillStyle(0x00aa44, 0.18); g.fillCircle(40, 50, 30);
+    // 몸통 아웃라인
+    g.fillStyle(0x006622); g.fillEllipse(40, 52, 54, 46);
+    // 몸통 메인 (밝은 초록)
+    g.fillStyle(0x22cc55); g.fillEllipse(40, 50, 50, 42);
+    // 몸통 하이라이트
+    g.fillStyle(0x66ee88, 0.55); g.fillEllipse(32, 38, 22, 14);
+    g.fillStyle(0xaaffbb, 0.30); g.fillEllipse(30, 36, 12, 7);
+    // 더듬이 (두 개)
+    g.fillStyle(0x006622);
+    g.fillRoundedRect(27, 14, 5, 18, 2); g.fillRoundedRect(48, 12, 5, 18, 2);
+    g.fillStyle(0x22cc55);
+    g.fillRoundedRect(28, 15, 3, 16, 2); g.fillRoundedRect(49, 13, 3, 16, 2);
+    g.fillStyle(0x006622); g.fillCircle(29, 13, 5); g.fillCircle(51, 11, 5);
+    g.fillStyle(0x44ee77); g.fillCircle(29, 12, 4); g.fillCircle(51, 10, 4);
+    g.fillStyle(0xffffff, 0.5); g.fillCircle(28, 11, 2); g.fillCircle(50, 9, 2);
     // 눈 흰자
-    g.fillStyle(0xffffff);
-    g.fillEllipse(33, 40, 12, 10); g.fillEllipse(47, 40, 12, 10);
-    // 홍채 (황금빛)
-    g.fillStyle(0xffdd00);
-    g.fillEllipse(34, 41, 8, 8); g.fillEllipse(48, 41, 8, 8);
-    // 동공
-    g.fillStyle(0x220000);
-    g.fillEllipse(34, 41, 5, 6); g.fillEllipse(48, 41, 5, 6);
-    // 하이라이트
-    g.fillStyle(0xffffff);
-    g.fillCircle(32, 39, 2.2); g.fillCircle(46, 39, 2.2);
-    g.fillCircle(35, 42, 1.1); g.fillCircle(49, 42, 1.1);
-    // 속눈썹
-    g.fillStyle(0x220000);
-    g.fillRoundedRect(27, 34, 13, 2.5, 1);
-    g.fillRoundedRect(41, 34, 13, 2.5, 1);
-
+    g.fillStyle(0xffffff); g.fillEllipse(30, 46, 14, 13); g.fillEllipse(50, 46, 14, 13);
+    // 홍채 (검정)
+    g.fillStyle(0x003311); g.fillEllipse(31, 47, 10, 11); g.fillEllipse(51, 47, 10, 11);
+    // 동공 하이라이트
+    g.fillStyle(0xffffff); g.fillCircle(29, 44, 3); g.fillCircle(49, 44, 3);
+    g.fillCircle(33, 48, 1.5); g.fillCircle(53, 48, 1.5);
+    // 웃는 입
+    g.fillStyle(0x004411); g.fillEllipse(40, 60, 20, 11);
+    g.fillStyle(0x22cc55); g.fillEllipse(40, 58, 22, 10);
+    g.fillStyle(0xffffff); g.fillRect(32, 58, 16, 4);
     // 볼터치
-    g.fillStyle(0xff6600, 0.22);
-    g.fillCircle(26, 45, 6); g.fillCircle(54, 45, 6);
-
-    // 입 (싱긋 웃음)
-    g.fillStyle(0x661100);
-    g.fillEllipse(40, 51, 14, 8);
-    g.fillStyle(0xff8800);
-    g.fillEllipse(40, 49, 16, 8);
-    g.fillStyle(0xffffff);
-    g.fillRect(34, 49, 12, 3);
+    g.fillStyle(0x99ffaa, 0.35); g.fillCircle(24, 52, 7); g.fillCircle(56, 52, 7);
 
     g.generateTexture('_tmp_slime', 80, 80);
     g.destroy();
     this._finalize('_tmp_slime', 'monster-slime', 80);
   }
 
-  // 고블린 — 보라 − 형태
+  // 고블린 — 초록 피부 소형 인간형, 뾰족한 귀와 빨간 눈
   _makeGoblinMonster() {
     const g = this.add.graphics();
-
     // 그림자
-    g.fillStyle(0x000000, 0.20);
-    g.fillEllipse(40, 77, 52, 9);
-
-    // 글로우
-    g.fillStyle(0x6600aa, 0.12);
-    g.fillEllipse(40, 44, 66, 28);
-
-    // ── − 기호가 몸통 (납작한 가로 바) ───────────────────────
-    g.fillStyle(0x330055);
-    g.fillRoundedRect(10, 31, 60, 24, 10);
-    g.fillStyle(0x7722cc);
-    g.fillRoundedRect(12, 33, 56, 20, 9);
-    g.fillStyle(0xaa55ee);
-    g.fillRoundedRect(14, 35, 52, 16, 8);
-    // 하이라이트
-    g.fillStyle(0xcc88ff, 0.45);
-    g.fillRoundedRect(16, 36, 30, 7, 4);
-    g.fillStyle(0xffffff, 0.18);
-    g.fillRoundedRect(17, 37, 16, 3, 2);
-
-    // ── 팔 (바 양 끝) ─────────────────────────────────────────
-    g.fillStyle(0x330055);
-    g.fillCircle(10, 43, 9); g.fillCircle(70, 43, 9);
-    g.fillStyle(0x7722cc);
-    g.fillCircle(10, 42, 8); g.fillCircle(70, 42, 8);
-    g.fillStyle(0xcc88ff, 0.35);
-    g.fillCircle(8, 40, 4); g.fillCircle(68, 40, 4);
-
-    // ── 다리 (바 아래에 달린 작은 다리) ─────────────────────
-    g.fillStyle(0x330055);
-    g.fillRoundedRect(25, 53, 11, 18, 4);
-    g.fillRoundedRect(44, 53, 11, 18, 4);
-    g.fillStyle(0x5511aa);
-    g.fillRoundedRect(26, 53, 9, 16, 3);
-    g.fillRoundedRect(45, 53, 9, 16, 3);
+    g.fillStyle(0x000000, 0.22); g.fillEllipse(40, 77, 40, 9);
+    // 다리
+    g.fillStyle(0x3a2200); g.fillRoundedRect(25, 60, 10, 18, 3); g.fillRoundedRect(45, 60, 10, 18, 3);
+    g.fillStyle(0x5c3a00); g.fillRoundedRect(26, 60, 8, 16, 2); g.fillRoundedRect(46, 60, 8, 16, 2);
     // 발
-    g.fillStyle(0x220033);
-    g.fillRoundedRect(23, 68, 15, 8, 4);
-    g.fillRoundedRect(42, 68, 15, 8, 4);
-    g.fillStyle(0x5511aa);
-    g.fillRoundedRect(24, 68, 13, 7, 3);
-    g.fillRoundedRect(43, 68, 13, 7, 3);
-
-    // ── 얼굴 (바 위에) ────────────────────────────────────────
+    g.fillStyle(0x2a1800); g.fillRoundedRect(22, 75, 16, 7, 3); g.fillRoundedRect(42, 75, 16, 7, 3);
+    g.fillStyle(0x5c3a00); g.fillRoundedRect(23, 75, 14, 6, 2); g.fillRoundedRect(43, 75, 14, 6, 2);
+    // 몸통 아웃라인
+    g.fillStyle(0x1a4400); g.fillRoundedRect(22, 38, 36, 25, 6);
+    // 몸통 메인 (어두운 초록)
+    g.fillStyle(0x336600); g.fillRoundedRect(23, 37, 34, 24, 5);
+    // 가죽 조끼
+    g.fillStyle(0x5c3a00); g.fillRoundedRect(27, 38, 26, 22, 4);
+    g.fillStyle(0x7a5200); g.fillRoundedRect(28, 39, 24, 20, 3);
+    g.fillStyle(0xffcc44, 0.6); g.fillRect(38, 39, 4, 20);
+    // 팔
+    g.fillStyle(0x1a4400); g.fillRoundedRect(12, 40, 12, 20, 4); g.fillRoundedRect(56, 40, 12, 20, 4);
+    g.fillStyle(0x336600); g.fillRoundedRect(13, 39, 10, 18, 3); g.fillRoundedRect(57, 39, 10, 18, 3);
+    // 손 (무기 들고)
+    g.fillStyle(0x1a4400); g.fillCircle(17, 60, 6); g.fillCircle(63, 60, 6);
+    g.fillStyle(0x336600); g.fillCircle(17, 59, 5); g.fillCircle(63, 59, 5);
+    // 몽둥이
+    g.fillStyle(0x5c3a00); g.fillRoundedRect(60, 44, 5, 22, 2);
+    g.fillStyle(0x7a5200); g.fillRoundedRect(61, 45, 3, 20, 1);
+    g.fillStyle(0x3a2200); g.fillCircle(63, 44, 7);
+    g.fillStyle(0x5c3a00); g.fillCircle(63, 43, 6);
+    // 뾰족한 귀
+    g.fillStyle(0x1a4400); g.fillTriangle(18, 24, 22, 10, 27, 24); g.fillTriangle(62, 24, 58, 10, 53, 24);
+    g.fillStyle(0x336600); g.fillTriangle(19, 24, 22, 12, 26, 24); g.fillTriangle(61, 24, 58, 12, 54, 24);
+    g.fillStyle(0x55aa00, 0.4); g.fillTriangle(20, 23, 22, 14, 25, 23); g.fillTriangle(60, 23, 58, 14, 55, 23);
+    // 머리
+    g.fillStyle(0x1a4400); g.fillCircle(40, 28, 18);
+    g.fillStyle(0x336600); g.fillCircle(40, 27, 17);
+    g.fillStyle(0x55aa00, 0.3); g.fillEllipse(32, 20, 14, 9);
+    // 머리카락 (텁수룩)
+    g.fillStyle(0x221100); g.fillRoundedRect(23, 14, 34, 8, 3);
+    g.fillStyle(0x442200); g.fillRoundedRect(24, 15, 32, 6, 2);
     // 눈 흰자
-    g.fillStyle(0xffffff);
-    g.fillEllipse(31, 42, 13, 11); g.fillEllipse(49, 42, 13, 11);
-    // 홍채 (보라)
-    g.fillStyle(0xcc66ff);
-    g.fillEllipse(32, 43, 9, 9); g.fillEllipse(50, 43, 9, 9);
-    // 동공
-    g.fillStyle(0x110022);
-    g.fillEllipse(32, 43, 5, 6); g.fillEllipse(50, 43, 5, 6);
-    // 하이라이트
-    g.fillStyle(0xffffff);
-    g.fillCircle(30, 41, 2.2); g.fillCircle(48, 41, 2.2);
-    g.fillCircle(33, 44, 1.1); g.fillCircle(51, 44, 1.1);
-    // 찡그린 눈썹 (안쪽이 낮음)
-    g.fillStyle(0x220033);
-    g.fillRoundedRect(25, 33, 13, 2.5, 1);
-    g.fillRoundedRect(43, 33, 13, 2.5, 1);
-    g.fillTriangle(37, 36, 37, 33, 25, 33);
-    g.fillTriangle(43, 33, 43, 36, 56, 33);
-
+    g.fillStyle(0xffffff); g.fillEllipse(33, 28, 11, 10); g.fillEllipse(47, 28, 11, 10);
+    // 홍채 (빨강)
+    g.fillStyle(0xcc0000); g.fillEllipse(34, 29, 7, 8); g.fillEllipse(48, 29, 7, 8);
+    g.fillStyle(0x220000); g.fillEllipse(34, 29, 4, 5); g.fillEllipse(48, 29, 4, 5);
+    g.fillStyle(0xffffff); g.fillCircle(32, 27, 2); g.fillCircle(46, 27, 2);
+    // 눈썹 (V자 찡그림)
+    g.fillStyle(0x221100); g.fillRoundedRect(27, 20, 11, 3, 1); g.fillRoundedRect(42, 20, 11, 3, 1);
+    g.fillTriangle(38, 23, 38, 20, 27, 20); g.fillTriangle(42, 20, 42, 23, 53, 20);
+    // 코
+    g.fillStyle(0x1a4400); g.fillTriangle(37, 33, 43, 33, 40, 37);
+    g.fillStyle(0x003300); g.fillCircle(38, 35, 2); g.fillCircle(42, 35, 2);
+    // 이빨 입
+    g.fillStyle(0x330000); g.fillRoundedRect(32, 36, 16, 8, 3);
+    g.fillStyle(0xdd0000); g.fillRect(33, 37, 14, 6);
+    g.fillStyle(0xffffff); g.fillTriangle(33, 37, 37, 37, 35, 43); g.fillTriangle(43, 37, 47, 37, 45, 43);
     // 볼터치
-    g.fillStyle(0xcc44ff, 0.18);
-    g.fillCircle(23, 46, 6); g.fillCircle(57, 46, 6);
-
-    // 입 (일자 불만)
-    g.fillStyle(0x330055);
-    g.fillRoundedRect(31, 50, 18, 5, 2);
-    g.fillStyle(0x9933ee);
-    g.fillRoundedRect(32, 50, 16, 4, 2);
+    g.fillStyle(0x55cc00, 0.25); g.fillCircle(25, 31, 6); g.fillCircle(55, 31, 6);
 
     g.generateTexture('_tmp_goblin', 80, 80);
     g.destroy();
     this._finalize('_tmp_goblin', 'monster-goblin', 80);
   }
 
-  // 오크전사 — 분노한 빨간 × 형태
+  // 오크전사 — 갈색 근육질 전사, 투구와 도끼
   _makeOrcMonster() {
     const g = this.add.graphics();
-
-    // 불꽃 글로우
-    g.fillStyle(0xff2200, 0.14);
-    g.fillCircle(40, 42, 38);
-
     // 그림자
-    g.fillStyle(0x000000, 0.20);
-    g.fillEllipse(40, 77, 44, 9);
-
-    // ── × 기호 몸통 (두 대각 막대 = 쿼드 두 개) ─────────────
-    // \ 막대: (13,16)→(23,8)→(67,60)→(57,68) 어두운 테두리
-    g.fillStyle(0x880000);
-    g.fillTriangle(13, 16, 23, 8, 67, 60);
-    g.fillTriangle(13, 16, 67, 60, 57, 68);
-    // / 막대: (57,8)→(67,16)→(23,68)→(13,60) 어두운 테두리
-    g.fillTriangle(57, 8, 67, 16, 23, 68);
-    g.fillTriangle(57, 8, 23, 68, 13, 60);
-
-    // 메인 색 \ 막대
-    g.fillStyle(0xff3300);
-    g.fillTriangle(15, 17, 22, 10, 65, 59);
-    g.fillTriangle(15, 17, 65, 59, 58, 66);
-    // 메인 색 / 막대
-    g.fillTriangle(58, 10, 65, 17, 22, 66);
-    g.fillTriangle(58, 10, 22, 66, 15, 59);
-
-    // 중심 원 (교차점)
-    g.fillStyle(0xdd2200);
-    g.fillCircle(40, 38, 14);
-    g.fillStyle(0xff4422);
-    g.fillCircle(40, 37, 12);
-    // 하이라이트
-    g.fillStyle(0xff8866, 0.45);
-    g.fillEllipse(35, 32, 12, 8);
-    g.fillStyle(0xffffff, 0.18);
-    g.fillEllipse(34, 31, 6, 4);
-
-    // 대각 막대 끝 (4개 = 손발)
-    // TL: 팔
-    g.fillStyle(0xcc2200); g.fillCircle(16, 14, 7);
-    g.fillStyle(0xff4422); g.fillCircle(15, 13, 6);
-    // TR: 팔
-    g.fillStyle(0xcc2200); g.fillCircle(64, 14, 7);
-    g.fillStyle(0xff4422); g.fillCircle(63, 13, 6);
-    // BL: 발
-    g.fillStyle(0xcc2200); g.fillCircle(16, 62, 7);
-    g.fillStyle(0xff4422); g.fillCircle(15, 61, 6);
-    // BR: 발
-    g.fillStyle(0xcc2200); g.fillCircle(64, 62, 7);
-    g.fillStyle(0xff4422); g.fillCircle(63, 61, 6);
-
-    // ── 얼굴 (중심 원 위에) ───────────────────────────────────
-    // 눈 흰자
-    g.fillStyle(0xffffff);
-    g.fillEllipse(33, 36, 11, 10); g.fillEllipse(47, 36, 11, 10);
-    // 홍채 (황금 분노)
-    g.fillStyle(0xffaa00);
-    g.fillEllipse(34, 37, 7, 8); g.fillEllipse(48, 37, 7, 8);
-    // 동공
-    g.fillStyle(0x110000);
-    g.fillEllipse(34, 37, 4, 6); g.fillEllipse(48, 37, 4, 6);
-    // 하이라이트
-    g.fillStyle(0xffffff);
-    g.fillCircle(32, 35, 2); g.fillCircle(46, 35, 2);
-    // 화난 눈썹
-    g.fillStyle(0x330000);
-    g.fillRoundedRect(28, 28, 12, 2.5, 1);
-    g.fillRoundedRect(40, 28, 12, 2.5, 1);
-    g.fillTriangle(40, 31, 40, 28, 28, 28);
-    g.fillTriangle(40, 28, 40, 31, 52, 28);
-
-    // 볼터치
-    g.fillStyle(0xff6600, 0.20);
-    g.fillCircle(27, 40, 6); g.fillCircle(53, 40, 6);
-
-    // 입 (날카로운 이빨)
-    g.fillStyle(0x330000);
-    g.fillEllipse(40, 46, 16, 9);
-    g.fillStyle(0xff2200);
-    g.fillEllipse(40, 44, 18, 8);
-    g.fillStyle(0xffffff);
-    for (let i = 0; i < 3; i++) {
-      g.fillTriangle(33 + i * 6, 44, 37 + i * 6, 44, 35 + i * 6, 50);
-    }
-
-    // 불꽃 파티클 (에너지)
-    g.fillStyle(0xff6600, 0.65);
-    g.fillCircle(7, 35, 5); g.fillCircle(73, 35, 5);
-    g.fillStyle(0xffdd00, 0.50);
-    g.fillCircle(5, 28, 3.5); g.fillCircle(75, 28, 3.5);
-    g.fillStyle(0xffffff, 0.28);
-    g.fillCircle(6, 27, 1.8); g.fillCircle(74, 27, 1.8);
+    g.fillStyle(0x000000, 0.22); g.fillEllipse(40, 77, 50, 10);
+    // 다리 (두껍고 짧음)
+    g.fillStyle(0x2a1800); g.fillRoundedRect(22, 57, 14, 20, 4); g.fillRoundedRect(44, 57, 14, 20, 4);
+    g.fillStyle(0x4a3000); g.fillRoundedRect(23, 57, 12, 18, 3); g.fillRoundedRect(45, 57, 12, 18, 3);
+    g.fillStyle(0x221500); g.fillRoundedRect(20, 73, 18, 7, 3); g.fillRoundedRect(42, 73, 18, 7, 3);
+    g.fillStyle(0x4a3000); g.fillRoundedRect(21, 73, 16, 6, 2); g.fillRoundedRect(43, 73, 16, 6, 2);
+    // 몸통 (판금 갑옷 느낌)
+    g.fillStyle(0x332200); g.fillRoundedRect(18, 35, 44, 26, 5);
+    g.fillStyle(0x664400); g.fillRoundedRect(19, 34, 42, 25, 4);
+    // 갑옷 장식
+    g.fillStyle(0x885500); g.fillRoundedRect(25, 36, 30, 22, 3);
+    g.fillStyle(0xaa7700); g.fillRoundedRect(26, 37, 28, 20, 2);
+    g.fillStyle(0xffcc44, 0.5);
+    g.fillRect(34, 36, 12, 22); g.fillRect(25, 47, 30, 3);
+    // 팔 (근육질)
+    g.fillStyle(0x332200); g.fillRoundedRect(8, 36, 13, 24, 5); g.fillRoundedRect(59, 36, 13, 24, 5);
+    g.fillStyle(0x664400); g.fillRoundedRect(9, 35, 12, 22, 4); g.fillRoundedRect(60, 35, 12, 22, 4);
+    g.fillStyle(0x885522); g.fillRoundedRect(10, 35, 10, 20, 3); g.fillRoundedRect(61, 35, 10, 20, 3);
+    // 손
+    g.fillStyle(0x332200); g.fillCircle(14, 60, 7); g.fillCircle(66, 60, 7);
+    g.fillStyle(0x664400); g.fillCircle(14, 59, 6); g.fillCircle(66, 59, 6);
+    // 도끼 (오른손)
+    g.fillStyle(0x553300); g.fillRoundedRect(64, 40, 4, 28, 2);
+    g.fillStyle(0x775500); g.fillRoundedRect(65, 41, 2, 26, 1);
+    g.fillStyle(0x444444); g.fillTriangle(62, 36, 72, 33, 72, 50); g.fillTriangle(62, 50, 72, 46, 72, 54);
+    g.fillStyle(0x888888); g.fillTriangle(63, 37, 71, 34, 71, 50); g.fillTriangle(63, 50, 71, 47, 71, 53);
+    g.fillStyle(0xcccccc, 0.4); g.fillRect(63, 37, 4, 12);
+    // 투구
+    g.fillStyle(0x333333); g.fillRoundedRect(20, 13, 40, 22, 8);
+    g.fillStyle(0x555555); g.fillRoundedRect(21, 14, 38, 20, 7);
+    g.fillStyle(0x777777, 0.5); g.fillEllipse(30, 18, 18, 10);
+    // 뿔
+    g.fillStyle(0x221100); g.fillTriangle(22, 18, 18, 4, 26, 18); g.fillTriangle(58, 18, 62, 4, 54, 18);
+    g.fillStyle(0x442200); g.fillTriangle(23, 18, 19, 6, 25, 18); g.fillTriangle(57, 18, 61, 6, 55, 18);
+    // 얼굴
+    g.fillStyle(0x332200); g.fillCircle(40, 32, 16);
+    g.fillStyle(0x664400); g.fillCircle(40, 31, 15);
+    g.fillStyle(0x885522, 0.4); g.fillEllipse(33, 25, 14, 9);
+    // 눈 (빨간 분노)
+    g.fillStyle(0xffffff); g.fillEllipse(32, 30, 12, 10); g.fillEllipse(48, 30, 12, 10);
+    g.fillStyle(0xff2200); g.fillEllipse(33, 31, 8, 8); g.fillEllipse(49, 31, 8, 8);
+    g.fillStyle(0x330000); g.fillEllipse(33, 31, 5, 6); g.fillEllipse(49, 31, 5, 6);
+    g.fillStyle(0xffffff); g.fillCircle(31, 29, 2.2); g.fillCircle(47, 29, 2.2);
+    // 눈썹 (두껍게 V자)
+    g.fillStyle(0x221100);
+    g.fillRoundedRect(26, 21, 13, 4, 1); g.fillRoundedRect(41, 21, 13, 4, 1);
+    g.fillTriangle(39, 25, 39, 21, 26, 21); g.fillTriangle(41, 21, 41, 25, 54, 21);
+    // 코 (납작하고 넓음)
+    g.fillStyle(0x332200); g.fillRoundedRect(36, 34, 8, 5, 2);
+    g.fillStyle(0x221100); g.fillCircle(37, 37, 2); g.fillCircle(43, 37, 2);
+    // 엄니 + 입
+    g.fillStyle(0x221100); g.fillRoundedRect(30, 39, 20, 8, 3);
+    g.fillStyle(0xcc2200); g.fillRect(31, 40, 18, 6);
+    g.fillStyle(0xffffff); g.fillTriangle(31, 40, 35, 40, 33, 47); g.fillTriangle(45, 40, 49, 40, 47, 47);
 
     g.generateTexture('_tmp_orc', 80, 80);
     g.destroy();
     this._finalize('_tmp_orc', 'monster-orc', 80);
   }
 
-  // 마녀 — 청록 ÷ 형태
+  // 마녀 — 뾰족 모자, 보라 로브, 마법 지팡이
   _makeWitchMonster() {
     const g = this.add.graphics();
-
-    // 글로우
-    g.fillStyle(0x0088aa, 0.13);
-    g.fillEllipse(40, 42, 64, 46);
-
     // 그림자
-    g.fillStyle(0x000000, 0.20);
-    g.fillEllipse(40, 77, 46, 9);
-
-    // ── ÷ 기호 몸통: 가로 바 ─────────────────────────────────
-    g.fillStyle(0x005566);
-    g.fillRoundedRect(12, 35, 56, 16, 7);
-    g.fillStyle(0x00aacc);
-    g.fillRoundedRect(14, 37, 52, 12, 6);
-    g.fillStyle(0x44ddee);
-    g.fillRoundedRect(16, 39, 48, 8, 5);
-    // 하이라이트
-    g.fillStyle(0x88ffff, 0.40);
-    g.fillRoundedRect(18, 40, 28, 4, 3);
-    g.fillStyle(0xffffff, 0.18);
-    g.fillRoundedRect(19, 40, 14, 2, 2);
-
-    // ── ÷ 위 점 (점 = 머리) ───────────────────────────────────
-    g.fillStyle(0x005566);
-    g.fillCircle(40, 16, 14);
-    g.fillStyle(0x00aacc);
-    g.fillCircle(40, 15, 13);
-    g.fillStyle(0x22ccdd);
-    g.fillCircle(40, 14, 12);
-    // 점 하이라이트
-    g.fillStyle(0x88ffff, 0.4);
-    g.fillEllipse(34, 9, 10, 7);
-    g.fillStyle(0xffffff, 0.20);
-    g.fillEllipse(33, 9, 5, 4);
-
-    // ── ÷ 아래 점 (점 = 발 대신 둥근 받침) ──────────────────
-    g.fillStyle(0x005566);
-    g.fillCircle(40, 67, 11);
-    g.fillStyle(0x00aacc);
-    g.fillCircle(40, 66, 10);
-    g.fillStyle(0x22ccdd);
-    g.fillCircle(40, 65, 9);
-    g.fillStyle(0x88ffff, 0.35);
-    g.fillEllipse(36, 62, 8, 5);
-
-    // ── 팔 (가로 바 양 끝) ────────────────────────────────────
-    g.fillStyle(0x005566);
-    g.fillCircle(12, 43, 9); g.fillCircle(68, 43, 9);
-    g.fillStyle(0x00aacc);
-    g.fillCircle(12, 42, 8); g.fillCircle(68, 42, 8);
-    g.fillStyle(0x88ffff, 0.35);
-    g.fillCircle(10, 40, 4); g.fillCircle(66, 40, 4);
-
-    // ── 얼굴 (머리 점 위에) ───────────────────────────────────
-    // 눈 흰자
-    g.fillStyle(0xffffff);
-    g.fillEllipse(34, 14, 11, 10); g.fillEllipse(46, 14, 11, 10);
-    // 홍채 (밝은 청록)
-    g.fillStyle(0x00ddcc);
-    g.fillEllipse(35, 15, 7, 8); g.fillEllipse(47, 15, 7, 8);
-    // 동공
-    g.fillStyle(0x001122);
-    g.fillEllipse(35, 15, 4, 5); g.fillEllipse(47, 15, 4, 5);
-    // 하이라이트
-    g.fillStyle(0xffffff);
-    g.fillCircle(33, 13, 2); g.fillCircle(45, 13, 2);
-    g.fillCircle(36, 16, 1.1); g.fillCircle(48, 16, 1.1);
-    // 눈썹 (의문스러운 물결)
-    g.fillStyle(0x003344);
-    g.fillRoundedRect(29, 7, 12, 2.5, 1);
-    g.fillRoundedRect(41, 7, 12, 2.5, 1);
-
-    // 볼터치
-    g.fillStyle(0x00cccc, 0.22);
-    g.fillCircle(28, 18, 5); g.fillCircle(52, 18, 5);
-
-    // 입 (신비로운 ○ 표정)
-    g.fillStyle(0x003344);
-    g.fillEllipse(40, 22, 12, 8);
-    g.fillStyle(0x00aacc);
-    g.fillEllipse(40, 22, 10, 6);
-    g.fillStyle(0xffffff, 0.5);
-    g.fillEllipse(38, 21, 4, 3);
-
+    g.fillStyle(0x000000, 0.22); g.fillEllipse(40, 77, 40, 9);
+    // 마법 오라
+    g.fillStyle(0x8800cc, 0.12); g.fillCircle(40, 45, 32);
+    // 로브 (넓은 삼각형)
+    g.fillStyle(0x1a0033); g.fillTriangle(20, 75, 60, 75, 50, 40); g.fillTriangle(20, 75, 30, 40, 50, 40);
+    g.fillStyle(0x330055); g.fillTriangle(22, 75, 58, 75, 49, 41); g.fillTriangle(22, 75, 31, 41, 49, 41);
+    g.fillStyle(0x550088, 0.4); g.fillTriangle(28, 70, 52, 70, 40, 45);
+    // 로브 별 장식
+    g.fillStyle(0xffdd00, 0.7);
+    [[30, 55], [50, 60], [37, 65]].forEach(([x, y]) => {
+      g.fillCircle(x, y, 2);
+    });
+    // 팔/소매
+    g.fillStyle(0x1a0033); g.fillRoundedRect(10, 42, 14, 22, 5); g.fillRoundedRect(56, 42, 14, 22, 5);
+    g.fillStyle(0x330055); g.fillRoundedRect(11, 41, 12, 20, 4); g.fillRoundedRect(57, 41, 12, 20, 4);
+    g.fillStyle(0x550088, 0.3); g.fillEllipse(16, 46, 10, 8); g.fillEllipse(64, 46, 10, 8);
+    // 손
+    g.fillStyle(0xffddcc); g.fillCircle(16, 63, 6); g.fillCircle(64, 63, 6);
+    g.fillStyle(0xffeedd); g.fillCircle(16, 62, 5); g.fillCircle(64, 62, 5);
+    // 지팡이 (왼손)
+    g.fillStyle(0x5c3a00); g.fillRoundedRect(6, 44, 4, 34, 2);
+    g.fillStyle(0x7a5200); g.fillRoundedRect(7, 45, 2, 32, 1);
+    g.fillStyle(0x8800cc); g.fillCircle(8, 44, 8);
+    g.fillStyle(0xaa44ee); g.fillCircle(8, 43, 7);
+    g.fillStyle(0xcc88ff, 0.5); g.fillCircle(6, 41, 4);
+    g.fillStyle(0xffffff, 0.6); g.fillCircle(6, 40, 2);
+    // 뾰족 모자
+    g.fillStyle(0x110022); g.fillTriangle(40, 4, 22, 30, 58, 30);
+    g.fillStyle(0x220044); g.fillTriangle(40, 5, 23, 30, 57, 30);
+    g.fillStyle(0x330066, 0.5); g.fillTriangle(40, 8, 28, 29, 52, 29);
+    // 모자 챙
+    g.fillStyle(0x110022); g.fillRoundedRect(16, 28, 48, 7, 3);
+    g.fillStyle(0x220044); g.fillRoundedRect(17, 29, 46, 5, 2);
+    g.fillStyle(0xffdd00, 0.6); g.fillRoundedRect(18, 30, 44, 2, 1);
+    // 모자 별
+    g.fillStyle(0xffee44); g.fillCircle(40, 16, 4);
+    g.fillStyle(0xffffff, 0.6); g.fillCircle(39, 15, 2);
+    // 얼굴
+    g.fillStyle(0xeeddcc); g.fillCircle(40, 40, 14);
+    g.fillStyle(0xffeedd); g.fillCircle(40, 39, 13);
+    g.fillStyle(0xffffff, 0.2); g.fillEllipse(34, 33, 12, 7);
+    // 눈 (빛나는 보라)
+    g.fillStyle(0xffffff); g.fillEllipse(32, 38, 12, 10); g.fillEllipse(48, 38, 12, 10);
+    g.fillStyle(0xaa22ee); g.fillEllipse(33, 39, 8, 8); g.fillEllipse(49, 39, 8, 8);
+    g.fillStyle(0x220033); g.fillEllipse(33, 39, 4, 6); g.fillEllipse(49, 39, 4, 6);
+    g.fillStyle(0xffffff); g.fillCircle(31, 37, 2.2); g.fillCircle(47, 37, 2.2);
+    g.fillCircle(34, 40, 1.1); g.fillCircle(50, 40, 1.1);
+    // 눈썹 (우아하게 아치)
+    g.fillStyle(0x330044); g.fillRoundedRect(27, 30, 12, 2.5, 1); g.fillRoundedRect(41, 30, 12, 2.5, 1);
+    // 코 (작고 오뚝)
+    g.fillStyle(0xddbbaa); g.fillTriangle(38, 43, 42, 43, 40, 46);
+    // 미소 입
+    g.fillStyle(0x550033); g.fillEllipse(40, 50, 16, 8);
+    g.fillStyle(0xeeddcc); g.fillEllipse(40, 48, 18, 8);
+    g.fillStyle(0xffffff); g.fillRect(34, 48, 12, 3);
     // 마법 파티클
-    g.fillStyle(0x00eeff, 0.65);
-    g.fillCircle(6, 20, 4); g.fillCircle(74, 20, 4);
-    g.fillCircle(5, 60, 3); g.fillCircle(75, 60, 3);
-    g.fillStyle(0xffffff, 0.55);
-    g.fillCircle(6, 20, 2); g.fillCircle(74, 20, 2);
+    g.fillStyle(0xcc44ff, 0.7); g.fillCircle(68, 28, 4); g.fillCircle(72, 40, 3);
+    g.fillStyle(0xffffff, 0.6); g.fillCircle(68, 27, 2); g.fillCircle(72, 39, 1.5);
+    // 볼터치
+    g.fillStyle(0xffaacc, 0.3); g.fillCircle(27, 42, 6); g.fillCircle(53, 42, 6);
 
     g.generateTexture('_tmp_witch', 80, 80);
     g.destroy();

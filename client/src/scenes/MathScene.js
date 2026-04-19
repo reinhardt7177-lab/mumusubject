@@ -628,7 +628,7 @@ export default class MathScene extends Phaser.Scene {
       this.battleOverlayGroup = null;
     }
 
-    const grp = this.add.container(0, 0).setDepth(40);
+    const grp = this.add.container(0, 0).setDepth(40).setScrollFactor(0);
     this.battleOverlayGroup = grp;
 
     // 어두운 배경
@@ -1231,7 +1231,7 @@ export default class MathScene extends Phaser.Scene {
       '⌫','0','✓',
     ];
 
-    this.numpadContainer = this.add.container(0, 0).setDepth(95).setAlpha(0);
+    this.numpadContainer = this.add.container(0, 0).setDepth(95).setAlpha(0).setScrollFactor(0);
 
     // 배경 패널
     const panelW = BW * COLS + GAP * (COLS - 1) + 24;
