@@ -581,6 +581,7 @@ export default class MathScene extends Phaser.Scene {
 
     // 대결 오버레이 생성
     this._createBattleOverlay(monster);
+    this.problemPanel.setVisible(false);
     this._floatText(400, 170, `⚔  ${MONSTER_NAMES[monster.type]}`, '#ff6688', 32);
     this._showNumpad();
   }
@@ -616,6 +617,7 @@ export default class MathScene extends Phaser.Scene {
 
     this.problemText.setText('몬스터에게 가까이 가면 문제가 나타납니다!');
     this.inputDisplay.setText('');
+    this.problemPanel.setVisible(true);
     this._hideNumpad();
   }
 
@@ -637,35 +639,37 @@ export default class MathScene extends Phaser.Scene {
     const spot = this.add.circle(monster.x, monster.y, 95, 0x9933ff, 0.12);
     grp.add(spot);
 
-    // 대결 패널 테두리 강조선
-    const panelTop = this.add.rectangle(400, 248, 680, 2, 0x9933ff, 0.8);
-    const panelBot = this.add.rectangle(400, 530, 680, 2, 0x9933ff, 0.8);
+    // 패널은 화면 왼쪽 — 키패드(오른쪽 210px)와 겹치지 않도록 x=280 중심, 너비 530
+    const PX = 275, PW = 530;
+    const panelTop = this.add.rectangle(PX, 248, PW, 2, 0x9933ff, 0.8);
+    const panelBot = this.add.rectangle(PX, 538, PW, 2, 0x9933ff, 0.8);
     grp.add([panelTop, panelBot]);
 
-    // 패널 배경
-    const panel = this.add.rectangle(400, 390, 680, 280, 0x0a0018, 0.96);
+    const panel = this.add.rectangle(PX, 393, PW, 290, 0x0a0018, 0.96);
     grp.add(panel);
 
     // 몬스터 이름 + Wave 정보
     const qLeft  = monster.maxHp - monster.hp;
-    const nameHdr = this.add.text(400, 266, `⚔  ${MONSTER_NAMES[monster.type]}  (${qLeft + 1} / ${monster.maxHp})`, {
-      fontSize: '20px', color: '#ff88cc',
+    const nameHdr = this.add.text(PX, 266, `⚔  ${MONSTER_NAMES[monster.type]}  (${qLeft + 1} / ${monster.maxHp})`, {
+      fontSize: '18px', color: '#ff88cc',
       stroke: '#000', strokeThickness: 4,
       fontFamily: 'monospace', fontStyle: 'bold',
     }).setOrigin(0.5);
     grp.add(nameHdr);
     this._battleNameHdr = nameHdr;
 
-    // 문제 텍스트 (크게)
-    this.battleProblemText = this.add.text(400, 335, monster.problem.question, {
-      fontSize: '40px', color: '#ffffff',
-      stroke: '#000', strokeThickness: 6,
+    // 문제 텍스트 — 자동 줄바꿈으로 긴 문장도 표시
+    this.battleProblemText = this.add.text(PX, 340, monster.problem.question, {
+      fontSize: '26px', color: '#ffffff',
+      stroke: '#000', strokeThickness: 5,
       fontFamily: 'monospace', fontStyle: 'bold',
+      wordWrap: { width: PW - 30 },
+      align: 'center',
     }).setOrigin(0.5);
     grp.add(this.battleProblemText);
 
     // 입력 표시
-    this.battleInputText = this.add.text(400, 400, '답: _', {
+    this.battleInputText = this.add.text(PX, 415, '답: _', {
       fontSize: '26px', color: '#FFD700',
       stroke: '#000', strokeThickness: 4,
       fontFamily: 'monospace',
@@ -673,23 +677,23 @@ export default class MathScene extends Phaser.Scene {
     grp.add(this.battleInputText);
 
     // Enter 힌트
-    const hint = this.add.text(400, 433, 'Enter = 제출   ESC = 도망가기', {
-      fontSize: '13px', color: '#666688', fontFamily: 'monospace',
+    const hint = this.add.text(PX, 448, 'Enter = 제출   ESC = 도망가기', {
+      fontSize: '12px', color: '#666688', fontFamily: 'monospace',
     }).setOrigin(0.5);
     grp.add(hint);
 
     // 구분선
-    grp.add(this.add.rectangle(400, 452, 580, 1, 0x333355, 0.8));
+    grp.add(this.add.rectangle(PX, 466, PW - 20, 1, 0x333355, 0.8));
 
     // HP 하트 (플레이어)
-    grp.add(this.add.text(130, 475, '내 HP', {
-      fontSize: '14px', color: '#aaaaaa', fontFamily: 'monospace',
+    grp.add(this.add.text(60, 490, '내 HP', {
+      fontSize: '13px', color: '#aaaaaa', fontFamily: 'monospace',
     }).setOrigin(0.5));
 
     this.battleHpHearts = [];
     for (let i = 0; i < this.stats.maxHp; i++) {
-      const heart = this.add.text(168 + i * 26, 475, '❤', {
-        fontSize: '20px',
+      const heart = this.add.text(95 + i * 24, 490, '❤', {
+        fontSize: '18px',
         color: i < this.stats.hp ? '#ff3355' : '#333333',
       }).setOrigin(0.5);
       grp.add(heart);
@@ -697,8 +701,8 @@ export default class MathScene extends Phaser.Scene {
     }
 
     // 콤보 텍스트
-    this.battleComboText = this.add.text(630, 475, '', {
-      fontSize: '18px', color: '#ffdd00',
+    this.battleComboText = this.add.text(490, 490, '', {
+      fontSize: '16px', color: '#ffdd00',
       stroke: '#000', strokeThickness: 3,
       fontFamily: 'monospace', fontStyle: 'bold',
     }).setOrigin(0.5);
