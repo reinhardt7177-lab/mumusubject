@@ -46,10 +46,10 @@ const ROOM_CONFIG = {
     playerStart: { x: 400, y: 520 },
     exit: { x: 400, y: 85, radius: 60, label: '숲 깊은 곳으로 ▲' },
     monsters: [
-      { x: 200, y: 290, type: 'orc' },
-      { x: 600, y: 290, type: 'witch' },
-      { x: 200, y: 440, type: 'orc' },
-      { x: 600, y: 440, type: 'witch' },
+      { x: 200, y: 290, type: 'skeleton' },
+      { x: 600, y: 290, type: 'dragon' },
+      { x: 200, y: 440, type: 'skeleton' },
+      { x: 600, y: 440, type: 'dragon' },
     ],
   },
   4: {

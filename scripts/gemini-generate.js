@@ -81,7 +81,7 @@ function saveLog(entry) {
 
 async function generate() {
   const genAI = new GoogleGenerativeAI(apiKey);
-  const model = genAI.getGenerativeModel({ model: 'gemini-2.5-flash-image' });
+  const model = genAI.getGenerativeModel({ model: 'gemini-3.1-flash-image-preview' });
 
   const finalPrompt = buildPrompt();
   const mode = spritesheet ? `스프라이트시트 (${dirs}방향 × ${frames}프레임)` : '단일 이미지';
