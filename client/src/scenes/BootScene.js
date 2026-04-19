@@ -42,19 +42,19 @@ export default class BootScene extends Phaser.Scene {
     this.textures.remove(tmpKey);
   }
 
-  // ─── 몬스터 4종 (성검전설3 스타일, 80×80) ─────────────────
+  // ─── 몬스터 4종 + 보스 ──────────────────────────────────────
 
   createMonsterTextures() {
-    this._makeAddMonster();
-    this._makeSubMonster();
-    this._makeMulMonster();
-    this._makeDivMonster();
+    this._makeSlimeMonster();
+    this._makeGoblinMonster();
+    this._makeOrcMonster();
+    this._makeWitchMonster();
     this._makeBossMonster();
     this._makeBossGoodMonster();
   }
 
-  // 더하기 몬스터 — 살아있는 + 기호 (교과 개념화)
-  _makeAddMonster() {
+  // 슬라임 — 친근한 주황 + 형태
+  _makeSlimeMonster() {
     const g = this.add.graphics();
 
     // 그림자
@@ -129,13 +129,13 @@ export default class BootScene extends Phaser.Scene {
     g.fillStyle(0xffffff);
     g.fillRect(34, 49, 12, 3);
 
-    g.generateTexture('_tmp_add', 80, 80);
+    g.generateTexture('_tmp_slime', 80, 80);
     g.destroy();
-    this._finalize('_tmp_add', 'monster-add', 80);
+    this._finalize('_tmp_slime', 'monster-slime', 80);
   }
 
-  // 빼기 몬스터 — 살아있는 − 기호 (교과 개념화)
-  _makeSubMonster() {
+  // 고블린 — 보라 − 형태
+  _makeGoblinMonster() {
     const g = this.add.graphics();
 
     // 그림자
@@ -213,13 +213,13 @@ export default class BootScene extends Phaser.Scene {
     g.fillStyle(0x9933ee);
     g.fillRoundedRect(32, 50, 16, 4, 2);
 
-    g.generateTexture('_tmp_sub', 80, 80);
+    g.generateTexture('_tmp_goblin', 80, 80);
     g.destroy();
-    this._finalize('_tmp_sub', 'monster-sub', 80);
+    this._finalize('_tmp_goblin', 'monster-goblin', 80);
   }
 
-  // 곱하기 몬스터 — 살아있는 × 기호 (교과 개념화)
-  _makeMulMonster() {
+  // 오크전사 — 분노한 빨간 × 형태
+  _makeOrcMonster() {
     const g = this.add.graphics();
 
     // 불꽃 글로우
@@ -314,13 +314,13 @@ export default class BootScene extends Phaser.Scene {
     g.fillStyle(0xffffff, 0.28);
     g.fillCircle(6, 27, 1.8); g.fillCircle(74, 27, 1.8);
 
-    g.generateTexture('_tmp_mul', 80, 80);
+    g.generateTexture('_tmp_orc', 80, 80);
     g.destroy();
-    this._finalize('_tmp_mul', 'monster-mul', 80);
+    this._finalize('_tmp_orc', 'monster-orc', 80);
   }
 
-  // 나누기 몬스터 — 살아있는 ÷ 기호 (교과 개념화)
-  _makeDivMonster() {
+  // 마녀 — 청록 ÷ 형태
+  _makeWitchMonster() {
     const g = this.add.graphics();
 
     // 글로우
@@ -413,9 +413,9 @@ export default class BootScene extends Phaser.Scene {
     g.fillStyle(0xffffff, 0.55);
     g.fillCircle(6, 20, 2); g.fillCircle(74, 20, 2);
 
-    g.generateTexture('_tmp_div', 80, 80);
+    g.generateTexture('_tmp_witch', 80, 80);
     g.destroy();
-    this._finalize('_tmp_div', 'monster-div', 80);
+    this._finalize('_tmp_witch', 'monster-witch', 80);
   }
 
   // 보스 몬스터 — 수학 마왕 (성검전설3 Dark Lord 스타일, 96×96)

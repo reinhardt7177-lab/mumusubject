@@ -16,10 +16,10 @@ const ROOM_CONFIG = {
     playerStart: { x: 400, y: 380 },
     exit: { x: 400, y: 78, radius: 55, label: '마법사의 집으로 ▲' },
     monsters: [
-      { x: 185, y: 210, type: 'add' },
-      { x: 615, y: 210, type: 'sub' },
-      { x: 185, y: 430, type: 'mul' },
-      { x: 615, y: 430, type: 'div' },
+      { x: 185, y: 210, type: 'slime' },
+      { x: 615, y: 210, type: 'goblin' },
+      { x: 185, y: 430, type: 'slime' },
+      { x: 615, y: 430, type: 'goblin' },
     ],
   },
   2: {
@@ -28,10 +28,10 @@ const ROOM_CONFIG = {
     exit: { x: 68, y: 310, radius: 55, label: '숲으로 나가기 ◀' },
     secretExit: { x: 400, y: 155, radius: 70, label: '✨ 비밀의 방 ✨' },
     monsters: [
-      { x: 220, y: 300, type: 'add' },
-      { x: 580, y: 300, type: 'sub' },
-      { x: 220, y: 450, type: 'mul' },
-      { x: 580, y: 450, type: 'div' },
+      { x: 220, y: 300, type: 'goblin' },
+      { x: 580, y: 300, type: 'orc' },
+      { x: 220, y: 450, type: 'witch' },
+      { x: 580, y: 450, type: 'slime' },
     ],
   },
   treasure: {
@@ -46,10 +46,10 @@ const ROOM_CONFIG = {
     playerStart: { x: 400, y: 520 },
     exit: { x: 400, y: 85, radius: 60, label: '숲 깊은 곳으로 ▲' },
     monsters: [
-      { x: 200, y: 290, type: 'add' },
-      { x: 600, y: 290, type: 'sub' },
-      { x: 200, y: 440, type: 'mul' },
-      { x: 600, y: 440, type: 'div' },
+      { x: 200, y: 290, type: 'orc' },
+      { x: 600, y: 290, type: 'witch' },
+      { x: 200, y: 440, type: 'orc' },
+      { x: 600, y: 440, type: 'witch' },
     ],
   },
   4: {
@@ -263,16 +263,13 @@ export default class MathScene extends Phaser.Scene {
     const { x, y } = cfg.monsters[0];
     const sprite = this.add.sprite(x, y, 'monster-boss').setDepth(4).setScale(0.75);
 
-    const bossTypes = ['add', 'sub', 'mul', 'div'];
-    const firstType = bossTypes[Math.floor(Math.random() * 4)];
-    const problem = this.generator.generate(firstType);
+    const problem = this.generator.generate('boss');
 
     const monster = {
       sprite, type: 'boss', problem,
       hp: 5, maxHp: 5,
       x, y, alive: true,
       isBoss: true,
-      bossTypes,
       hpBar:   this._makeBossHpBar(5),
       nameTag: this._makeNameTag(x, y + 72, 'boss'),
     };
@@ -782,12 +779,7 @@ export default class MathScene extends Phaser.Scene {
       this._killMonster(m);
     } else {
       // 다음 문제 생성
-      if (m.isBoss) {
-        const nextType = m.bossTypes[Math.floor(Math.random() * m.bossTypes.length)];
-        m.problem = this.generator.generate(nextType);
-      } else {
-        m.problem = this.generator.generate(m.type);
-      }
+      m.problem = this.generator.generate(m.type);
       this.problemText.setText(m.problem.question);
       // 대결 패널 문제 + 진행도 갱신
       if (this.battleProblemText) this.battleProblemText.setText(m.problem.question);
@@ -1100,8 +1092,7 @@ export default class MathScene extends Phaser.Scene {
     this.pedestalChallenge = { questions: [], current: 0, correct: 0 };
 
     // 5문제 생성
-    const types = ['add', 'sub', 'mul', 'div', 'add'];
-    this.pedestalChallenge.questions = types.map(t => this.generator.generate(t));
+    this.pedestalChallenge.questions = Array.from({ length: 5 }, () => this.generator.generate());
 
     this._showPedestalQuestion();
   }
