@@ -4,7 +4,6 @@
 import Phaser from 'phaser';
 import BootScene from './scenes/BootScene';
 import MathScene from './scenes/MathScene';
-import CurlingScene from './scenes/CurlingScene';
 
 const config = {
   type: Phaser.AUTO,
@@ -26,7 +25,6 @@ const config = {
   scene: [
     BootScene,
     MathScene,
-    CurlingScene,
     // 추후 씬 추가
   ],
 };
