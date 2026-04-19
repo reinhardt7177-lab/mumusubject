@@ -115,6 +115,7 @@ export default class MathScene extends Phaser.Scene {
     this.combo             = 0;
     this.battleStartTime   = 0;
     this.battleOverlayGroup = null;
+    this.numpadContainer   = null; // 씬 재시작 시 파괴된 참조 초기화
 
     this.cursors = this.input.keyboard.createCursorKeys();
     this._setupKeyboard();
@@ -395,6 +396,42 @@ export default class MathScene extends Phaser.Scene {
       }).setOrigin(0.5).setDepth(21);
       this.hudHpHearts.push(heart);
     }
+
+    this._createSkipButton();
+  }
+
+  // ─── [DEBUG] 방 스킵 버튼 ─────────────────────────────────
+  _createSkipButton() {
+    const ROOM_ORDER = [1, 2, 'treasure', 3, 4];
+    const idx  = ROOM_ORDER.indexOf(this.room);
+    const next = ROOM_ORDER[(idx + 1) % ROOM_ORDER.length];
+    const label = `▶ 다음 방 (${next})`;
+
+    const bg = this.add.rectangle(720, 48, 150, 22, 0x222266, 0.85)
+      .setStrokeStyle(1, 0x88aaff).setDepth(30);
+    const txt = this.add.text(720, 48, label, {
+      fontSize: '12px', color: '#ffffff',
+      fontFamily: 'monospace', fontStyle: 'bold',
+    }).setOrigin(0.5).setDepth(31);
+
+    bg.setInteractive({ useHandCursor: true });
+    bg.on('pointerover', () => bg.setFillStyle(0x4466aa, 0.95));
+    bg.on('pointerout',  () => bg.setFillStyle(0x222266, 0.85));
+    bg.on('pointerdown', () => this._skipToRoom(next));
+  }
+
+  _skipToRoom(room) {
+    if (this.transitioning) return;
+    this.transitioning = true;
+    this.cameras.main.fadeOut(300, 0, 0, 0);
+    this.cameras.main.once('camerafadeoutcomplete', () => {
+      this.scene.start('MathScene', {
+        room,
+        stats:    this.stats,
+        grade:    this.grade,
+        fromRoom: typeof room === 'string' ? this.room : null,
+      });
+    });
   }
 
   _refreshHUD() {
@@ -524,10 +561,23 @@ export default class MathScene extends Phaser.Scene {
       }
     }
 
+    // 도망친 몬스터 재교전 해제 — 반경 밖으로 나가면 풀림
+    if (this._escapedFrom) {
+      if (!this._escapedFrom.alive) {
+        this._escapedFrom = null;
+      } else {
+        const d = Phaser.Math.Distance.Between(
+          this.player.x, this.player.y,
+          this._escapedFrom.sprite.x, this._escapedFrom.sprite.y
+        );
+        if (d >= SELECT_RADIUS + 15) this._escapedFrom = null;
+      }
+    }
+
     // 대결 중 아닐 때만 몬스터 근접 감지
     if (!this.inBattle) {
       let nearest = null, nearestDist = SELECT_RADIUS;
-      this.monsters.filter(m => m.alive).forEach(m => {
+      this.monsters.filter(m => m.alive && m !== this._escapedFrom).forEach(m => {
         const d = Phaser.Math.Distance.Between(this.player.x, this.player.y, m.sprite.x, m.sprite.y);
         if (d < nearestDist) { nearest = m; nearestDist = d; }
       });
@@ -590,6 +640,10 @@ export default class MathScene extends Phaser.Scene {
     if (!this.inBattle) return;
     this.inBattle = false;
 
+    // ESC로 도망친 경우 플레이어가 SELECT_RADIUS 벗어나기 전엔 재교전 막기
+    const escaped = this.selectedMonster;
+    this._escapedFrom = (escaped && escaped.alive) ? escaped : null;
+
     if (this.selectedMonster && this.selectedMonster.alive) {
       this.selectedMonster.sprite.clearTint();
     }
@@ -631,16 +685,16 @@ export default class MathScene extends Phaser.Scene {
     const grp = this.add.container(0, 0).setDepth(40).setScrollFactor(0);
     this.battleOverlayGroup = grp;
 
-    // 어두운 배경
-    const bg = this.add.rectangle(400, 300, 800, 600, 0x000000, 0.78);
+    // 어두운 배경 — 게임 화면이 은은히 비치도록 반투명
+    const bg = this.add.rectangle(400, 300, 800, 600, 0x000000, 0.5);
     grp.add(bg);
 
     // 몬스터 스포트라이트
     const spot = this.add.circle(monster.x, monster.y, 95, 0x9933ff, 0.12);
     grp.add(spot);
 
-    // 패널은 화면 왼쪽 — 키패드(오른쪽 210px)와 겹치지 않도록 x=280 중심, 너비 530
-    const PX = 275, PW = 530;
+    // 패널 좌측, 키패드 우측 — 패널 폭 축소(460)로 우측 여백 확보
+    const PX = 250, PW = 460;
     const panelTop = this.add.rectangle(PX, 248, PW, 2, 0x9933ff, 0.8);
     const panelBot = this.add.rectangle(PX, 538, PW, 2, 0x9933ff, 0.8);
     grp.add([panelTop, panelBot]);
@@ -648,19 +702,38 @@ export default class MathScene extends Phaser.Scene {
     const panel = this.add.rectangle(PX, 393, PW, 290, 0x0a0018, 0.96);
     grp.add(panel);
 
+    // 몬스터 초상화 (패널 좌측)
+    const portraitX = PX - PW / 2 + 50;
+    const portraitY = 286;
+    const portraitBg = this.add.circle(portraitX, portraitY, 36, 0x1a1428, 0.9)
+      .setStrokeStyle(2, 0x9933ff, 0.9);
+    grp.add(portraitBg);
+    const portrait = this.add.sprite(portraitX, portraitY, `monster-${monster.type}`)
+      .setScale(0.5);
+    grp.add(portrait);
+    this.tweens.add({
+      targets: portrait,
+      scaleX: 0.55, scaleY: 0.55,
+      duration: 700, yoyo: true, repeat: -1, ease: 'Sine.easeInOut',
+    });
+
     // 몬스터 이름 + Wave 정보
     const qLeft  = monster.maxHp - monster.hp;
-    const nameHdr = this.add.text(PX, 266, `⚔  ${MONSTER_NAMES[monster.type]}  (${qLeft + 1} / ${monster.maxHp})`, {
-      fontSize: '18px', color: '#ff88cc',
+    const nameHdr = this.add.text(portraitX + 50, 278, `⚔  ${MONSTER_NAMES[monster.type]}`, {
+      fontSize: '17px', color: '#ff88cc',
       stroke: '#000', strokeThickness: 4,
       fontFamily: 'monospace', fontStyle: 'bold',
-    }).setOrigin(0.5);
+    }).setOrigin(0, 0.5);
     grp.add(nameHdr);
     this._battleNameHdr = nameHdr;
+    const progressHdr = this.add.text(portraitX + 50, 300, `문제 ${qLeft + 1} / ${monster.maxHp}`, {
+      fontSize: '13px', color: '#aaaadd', fontFamily: 'monospace',
+    }).setOrigin(0, 0.5);
+    grp.add(progressHdr);
 
     // 문제 텍스트 — 자동 줄바꿈으로 긴 문장도 표시
-    this.battleProblemText = this.add.text(PX, 340, monster.problem.question, {
-      fontSize: '26px', color: '#ffffff',
+    this.battleProblemText = this.add.text(PX, 360, monster.problem.question, {
+      fontSize: '24px', color: '#ffffff',
       stroke: '#000', strokeThickness: 5,
       fontFamily: 'monospace', fontStyle: 'bold',
       wordWrap: { width: PW - 30 },
@@ -668,31 +741,35 @@ export default class MathScene extends Phaser.Scene {
     }).setOrigin(0.5);
     grp.add(this.battleProblemText);
 
-    // 입력 표시
-    this.battleInputText = this.add.text(PX, 415, '답: _', {
-      fontSize: '26px', color: '#FFD700',
+    // 입력 표시 박스 (테두리 + 큰 글씨)
+    const inputBox = this.add.rectangle(PX, 430, 280, 52, 0x000000, 0.55)
+      .setStrokeStyle(2, 0xFFD700, 0.85);
+    grp.add(inputBox);
+    this.battleInputText = this.add.text(PX, 430, '답: _', {
+      fontSize: '34px', color: '#FFD700',
       stroke: '#000', strokeThickness: 4,
-      fontFamily: 'monospace',
+      fontFamily: 'monospace', fontStyle: 'bold',
     }).setOrigin(0.5);
     grp.add(this.battleInputText);
 
     // Enter 힌트
-    const hint = this.add.text(PX, 448, 'Enter = 제출   ESC = 도망가기', {
+    const hint = this.add.text(PX, 468, 'Enter = 제출   ESC = 도망가기', {
       fontSize: '12px', color: '#666688', fontFamily: 'monospace',
     }).setOrigin(0.5);
     grp.add(hint);
 
     // 구분선
-    grp.add(this.add.rectangle(PX, 466, PW - 20, 1, 0x333355, 0.8));
+    grp.add(this.add.rectangle(PX, 484, PW - 20, 1, 0x333355, 0.8));
 
     // HP 하트 (플레이어)
-    grp.add(this.add.text(60, 490, '내 HP', {
+    const HP_Y = 510;
+    grp.add(this.add.text(60, HP_Y, '내 HP', {
       fontSize: '13px', color: '#aaaaaa', fontFamily: 'monospace',
     }).setOrigin(0.5));
 
     this.battleHpHearts = [];
     for (let i = 0; i < this.stats.maxHp; i++) {
-      const heart = this.add.text(95 + i * 24, 490, '❤', {
+      const heart = this.add.text(95 + i * 24, HP_Y, '❤', {
         fontSize: '18px',
         color: i < this.stats.hp ? '#ff3355' : '#333333',
       }).setOrigin(0.5);
@@ -701,7 +778,7 @@ export default class MathScene extends Phaser.Scene {
     }
 
     // 콤보 텍스트
-    this.battleComboText = this.add.text(490, 490, '', {
+    this.battleComboText = this.add.text(420, HP_Y, '', {
       fontSize: '16px', color: '#ffdd00',
       stroke: '#000', strokeThickness: 3,
       fontFamily: 'monospace', fontStyle: 'bold',
@@ -1219,10 +1296,10 @@ export default class MathScene extends Phaser.Scene {
   _createNumpadOnce() {
     if (this.numpadContainer) return;
 
-    const BW = 64, BH = 52, GAP = 6;
+    const BW = 50, BH = 42, GAP = 5;
     const COLS = 3;
-    const startX = 800 - (BW * COLS + GAP * (COLS - 1)) - 12;
-    const startY = 310;
+    const startX = 800 - (BW * COLS + GAP * (COLS - 1)) - 14;
+    const startY = 360;
 
     const keys = [
       '7','8','9',
@@ -1255,7 +1332,7 @@ export default class MathScene extends Phaser.Scene {
         .setStrokeStyle(2, border, 0.8)
         .setInteractive({ useHandCursor: true });
       const lbl = this.add.text(bx, by, k, {
-        fontSize: isEnter || isDel ? '20px' : '24px',
+        fontSize: isEnter || isDel ? '16px' : '20px',
         color: '#ffffff', fontFamily: 'monospace', fontStyle: 'bold',
       }).setOrigin(0.5);
 

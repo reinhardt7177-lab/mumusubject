@@ -19,15 +19,14 @@ export default class BootScene extends Phaser.Scene {
     this.load.image('hero-lv3', '/assets/characters/hero-lv3.png');
     this.load.image('hero-lv4', '/assets/characters/hero-lv4.png');
 
-    // 몬스터 스프라이트시트 (4방향 × 4프레임, 128×128/cell)
-    const SS = { frameWidth: 128, frameHeight: 128 };
-    this.load.spritesheet('monster-slime',    '/assets/characters/monster-slime.png',    SS);
-    this.load.spritesheet('monster-goblin',   '/assets/characters/monster-goblin.png',   SS);
-    this.load.spritesheet('monster-orc',      '/assets/characters/monster-orc.png',      SS);
-    this.load.spritesheet('monster-witch',    '/assets/characters/monster-witch.png',    SS);
-    this.load.spritesheet('monster-skeleton', '/assets/characters/monster-skeleton.png', SS);
-    this.load.spritesheet('monster-dragon',   '/assets/characters/monster-dragon.png',   SS);
-    this.load.spritesheet('monster-boss',     '/assets/characters/monster-boss.png',     SS);
+    // 몬스터 정적 이미지 (128×128, 첫 번째 프레임)
+    this.load.image('monster-slime',    '/assets/characters/monster-slime.png');
+    this.load.image('monster-goblin',   '/assets/characters/monster-goblin.png');
+    this.load.image('monster-orc',      '/assets/characters/monster-orc.png');
+    this.load.image('monster-witch',    '/assets/characters/monster-witch.png');
+    this.load.image('monster-skeleton', '/assets/characters/monster-skeleton.png');
+    this.load.image('monster-dragon',   '/assets/characters/monster-dragon.png');
+    this.load.image('monster-boss',     '/assets/characters/monster-boss.png');
   }
 
   create() {

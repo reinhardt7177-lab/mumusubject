@@ -46,7 +46,7 @@ function colorDist(r1, g1, b1, r2, g2, b2) {
   return Math.sqrt((r1-r2)**2 + (g1-g2)**2 + (b1-b2)**2);
 }
 
-// 배경 제거: 코너 픽셀 색상을 배경으로 간주하고 투명 처리
+// 배경 제거: 4방향 Flood-fill (코너에서 시작해 연결된 배경만 제거)
 async function removeBackground(inputPath) {
   const img    = sharp(inputPath);
   const { data, info } = await img.ensureAlpha().raw().toBuffer({ resolveWithObject: true });
@@ -56,32 +56,82 @@ async function removeBackground(inputPath) {
   const buf = Buffer.from(data);
 
   // 코너 4픽셀의 평균 색상 = 배경색
-  const corners = [
-    [0, 0], [W - 1, 0], [0, H - 1], [W - 1, H - 1]
-  ];
+  const corners = [[0,0],[W-1,0],[0,H-1],[W-1,H-1]];
   let bgR = 0, bgG = 0, bgB = 0;
   for (const [cx, cy] of corners) {
     const idx = (cy * W + cx) * 4;
-    bgR += buf[idx]; bgG += buf[idx + 1]; bgB += buf[idx + 2];
+    bgR += buf[idx]; bgG += buf[idx+1]; bgB += buf[idx+2];
   }
   bgR = Math.round(bgR / 4);
   bgG = Math.round(bgG / 4);
   bgB = Math.round(bgB / 4);
-
   console.log(`🎨 감지된 배경색: rgb(${bgR}, ${bgG}, ${bgB})`);
 
-  // 배경색과 유사한 픽셀 투명 처리
+  // Flood-fill: 코너에서 시작해 연결된 배경 픽셀만 투명 처리
+  const visited = new Uint8Array(W * H);
+  const queue   = [];
+
+  const isBg = (x, y) => {
+    const idx = (y * W + x) * 4;
+    return colorDist(buf[idx], buf[idx+1], buf[idx+2], bgR, bgG, bgB) < threshold;
+  };
+
+  const enqueue = (x, y) => {
+    if (x < 0 || x >= W || y < 0 || y >= H) return;
+    const pos = y * W + x;
+    if (visited[pos] || !isBg(x, y)) return;
+    visited[pos] = 1;
+    queue.push(x, y);
+  };
+
+  // 4개 코너를 시드로 시작
+  for (const [cx, cy] of corners) enqueue(cx, cy);
+
   let removed = 0;
-  for (let i = 0; i < buf.length; i += 4) {
-    const dist = colorDist(buf[i], buf[i+1], buf[i+2], bgR, bgG, bgB);
-    if (dist < threshold) {
-      buf[i + 3] = 0; // alpha = 0 (투명)
-      removed++;
+  while (queue.length > 0) {
+    const y = queue.pop();
+    const x = queue.pop();
+    const idx = (y * W + x) * 4;
+    buf[idx + 3] = 0; // 투명
+    removed++;
+    enqueue(x+1, y); enqueue(x-1, y);
+    enqueue(x, y+1); enqueue(x, y-1);
+  }
+
+  // 2차 패스: 체커보드 흰색 칸 제거
+  // 코너 flood-fill 후 남은 밝은 픽셀 중 투명 픽셀에 인접한 것을 추가 제거
+  const isTransparent = (x, y) => buf[(y * W + x) * 4 + 3] === 0;
+  const isBright = (x, y) => {
+    const idx = (y * W + x) * 4;
+    return buf[idx] > 180 && buf[idx+1] > 180 && buf[idx+2] > 180;
+  };
+
+  let pass2 = 0;
+  let changed = true;
+  while (changed) {
+    changed = false;
+    for (let y = 0; y < H; y++) {
+      for (let x = 0; x < W; x++) {
+        const idx = (y * W + x) * 4;
+        if (buf[idx + 3] !== 0 && isBright(x, y)) {
+          // 4방향 중 하나라도 투명이면 이 픽셀도 제거
+          const adjTransp =
+            (x > 0     && isTransparent(x-1, y)) ||
+            (x < W-1   && isTransparent(x+1, y)) ||
+            (y > 0     && isTransparent(x, y-1)) ||
+            (y < H-1   && isTransparent(x, y+1));
+          if (adjTransp) {
+            buf[idx + 3] = 0;
+            removed++;
+            pass2++;
+            changed = true;
+          }
+        }
+      }
     }
   }
 
-  console.log(`✂️  배경 제거: ${removed}px 투명 처리`);
-
+  console.log(`✂️  배경 제거 (flood-fill): ${removed}px 투명 처리 (2차 밝은픽셀: ${pass2}px)`);
   return sharp(buf, { raw: { width: W, height: H, channels: 4 } }).png();
 }
 
