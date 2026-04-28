@@ -4,17 +4,18 @@
 import Phaser from 'phaser';
 import BootScene from './scenes/BootScene';
 import MathScene from './scenes/MathScene';
+import { GAME_WIDTH, GAME_HEIGHT } from './config/constants';
 
-const config = {
+const config: Phaser.Types.Core.GameConfig = {
   type: Phaser.AUTO,
   parent: 'game',
-  width: 800,
-  height: 600,
+  width: GAME_WIDTH,
+  height: GAME_HEIGHT,
   scale: {
     mode: Phaser.Scale.FIT,
     autoCenter: Phaser.Scale.CENTER_BOTH,
-    width: 800,
-    height: 600,
+    width: GAME_WIDTH,
+    height: GAME_HEIGHT,
     parent: 'game',
     expandParent: true,
   },
@@ -22,11 +23,7 @@ const config = {
     pixelArt: true,
     antialias: false,
   },
-  scene: [
-    BootScene,
-    MathScene,
-    // 추후 씬 추가
-  ],
+  scene: [BootScene, MathScene],
 };
 
-const game = new Phaser.Game(config);
+new Phaser.Game(config);

@@ -5,41 +5,56 @@ export const GRADES = {
   G12: '1~2학년',
   G34: '3~4학년',
   G56: '5~6학년',
+} as const;
+
+export type Grade = typeof GRADES[keyof typeof GRADES];
+
+export const MONSTER_TYPES = ['slime', 'goblin', 'orc', 'witch', 'skeleton', 'dragon'] as const;
+export type MonsterType = typeof MONSTER_TYPES[number];
+export type MonsterTypeOrBoss = MonsterType | 'boss' | 'archangel';
+
+export const MONSTER_NAMES: Record<MonsterTypeOrBoss, string> = {
+  slime:     '슬라임',
+  goblin:    '고블린',
+  orc:       '오크전사',
+  witch:     '마녀',
+  skeleton:  '해골기사',
+  dragon:    '드래곤',
+  boss:      '수학 마왕 👑',
+  archangel: '타락한 대천사 👼',
 };
 
-export const MONSTER_TYPES = ['slime', 'goblin', 'orc', 'witch', 'skeleton', 'dragon'];
+export interface Question {
+  question: string;
+  answer: number;
+}
 
-export const MONSTER_NAMES = {
-  slime:    '슬라임',
-  goblin:   '고블린',
-  orc:      '오크전사',
-  witch:    '마녀',
-  skeleton: '해골기사',
-  dragon:   '드래곤',
-  boss:     '수학 마왕 👑',
-};
+type Specialty = 'basic' | 'operation' | 'measurement' | 'pattern' | 'applied' | 'hard' | 'all';
+type QuestionFactory = () => Question;
+type Pool = Record<Exclude<Specialty, 'all'>, QuestionFactory[]>;
 
-// 몬스터별 특기 카테고리
-const MONSTER_SPECIALTY = {
-  slime:    'basic',       // 기초 덧셈/뺄셈/빈칸
-  goblin:   'operation',   // 구구단/곱셈/나눗셈/혼합
-  orc:      'measurement', // 시계/길이/넓이/돈
-  witch:    'pattern',     // 수열/패턴/분수
-  skeleton: 'applied',     // 응용/서술/나머지
-  dragon:   'hard',        // 어려운 복합문제
-  boss:     'all',         // 전 유형
+const MONSTER_SPECIALTY: Record<MonsterTypeOrBoss, Specialty> = {
+  slime:     'basic',
+  goblin:    'operation',
+  orc:       'measurement',
+  witch:     'pattern',
+  skeleton:  'applied',
+  dragon:    'hard',
+  boss:      'all',
+  archangel: 'all',
 };
 
 export class MathQuestionGenerator {
-  constructor(grade = GRADES.G12) {
+  private grade: Grade;
+
+  constructor(grade: Grade = GRADES.G12) {
     this.grade = grade;
   }
 
-  setGrade(grade) { this.grade = grade; }
+  setGrade(grade: Grade): void { this.grade = grade; }
 
-  // 몬스터 타입에 따라 특기 70% + 전체 30%
-  generate(monsterType = 'slime') {
-    const specialty = MONSTER_SPECIALTY[monsterType] || 'all';
+  generate(monsterType: MonsterTypeOrBoss = 'slime'): Question {
+    const specialty = MONSTER_SPECIALTY[monsterType] ?? 'all';
     const allPool = this._pool('all');
 
     if (specialty === 'all') {
@@ -51,7 +66,7 @@ export class MathQuestionGenerator {
     return useSpecialty ? pick(specialPool)() : pick(allPool)();
   }
 
-  _pool(category) {
+  private _pool(category: Specialty): QuestionFactory[] {
     switch (this.grade) {
       case GRADES.G34: return this._pool34(category);
       case GRADES.G56: return this._pool56(category);
@@ -59,10 +74,8 @@ export class MathQuestionGenerator {
     }
   }
 
-  // ─── 1~2학년 ──────────────────────────────────────────────────
-  _pool12(category) {
-    const pools = {
-      // 기초: 덧셈/뺄셈/빈칸 (slime)
+  private _pool12(category: Specialty): QuestionFactory[] {
+    const pools: Pool = {
       basic: [
         () => { const a = rand(1,10), b = rand(1,10); return q(`${a} + ${b} = ?`, a+b); },
         () => { const a = rand(5,15), b = rand(1,a); return q(`${a} - ${b} = ?`, a-b); },
@@ -71,7 +84,6 @@ export class MathQuestionGenerator {
         () => { const ans=rand(1,8), b=rand(1,5); return q(`${ans+b} - □ = ${ans},  □ 는?`, b); },
         () => { const a=rand(10,20), b=rand(1,a-1); return q(`${a} - ${b} = ?`, a-b); },
       ],
-      // 연산: 구구단 (goblin)
       operation: [
         () => { const b=rand(1,9); return q(`2 × ${b} = ?`, 2*b); },
         () => { const b=rand(1,9); return q(`3 × ${b} = ?`, 3*b); },
@@ -79,7 +91,6 @@ export class MathQuestionGenerator {
         () => { const b=rand(2,5), ans=rand(1,5); return q(`${b*ans} ÷ ${b} = ?`, ans); },
         () => { const a=rand(2,5), b=rand(2,5); return q(`${a} × ${b} = ?`, a*b); },
       ],
-      // 측정: 시계/돈/묶음 (orc)
       measurement: [
         () => { const h=rand(1,10), add=rand(1,3); return q(`${h}시에서 ${add}시간 후는 몇 시?`, h+add); },
         () => { const n=rand(2,9); return q(`100원짜리 ${n}개는 모두 몇 원?`, 100*n); },
@@ -87,19 +98,16 @@ export class MathQuestionGenerator {
         () => { const a=rand(3,8), b=rand(3,8); return q(`${a}cm + ${b}cm = ?cm`, a+b); },
         () => { const n=rand(2,5); return q(`50원짜리 ${n}개는 모두 몇 원?`, 50*n); },
       ],
-      // 패턴: 수열 (witch)
       pattern: [
         () => { const s=rand(1,5), d=rand(2,4), c=rand(3,5); const seq=Array.from({length:c},(_,i)=>s+i*d); return q(`${seq.join(', ')}, □ = ?`, s+c*d); },
         () => { const s=rand(2,8), d=2, c=rand(3,5); const seq=Array.from({length:c},(_,i)=>s+i*d); return q(`${seq.join(', ')}, □ = ?`, s+c*d); },
         () => { const s=rand(10,30); return q(`${s}, ${s-2}, ${s-4}, ${s-6}, □ = ?`, s-8); },
       ],
-      // 응용: 문장제 (skeleton)
       applied: [
         () => { const t=rand(10,20), e=rand(1,t-1); return q(`사탕 ${t}개에서 ${e}개 먹으면 남은 개수는?`, t-e); },
         () => { const a=rand(3,8), b=rand(3,8); return q(`어항에 금붕어 ${a}마리, 열대어 ${b}마리 — 모두 몇 마리?`, a+b); },
         () => { const p=rand(2,8), c=rand(2,4); return q(`사과가 한 바구니에 ${p}개씩 ${c}바구니 — 모두 몇 개?`, p*c); },
       ],
-      // 어려운 복합 (dragon) — 1~2학년은 hard=operation과 동일
       hard: [
         () => { const b=rand(1,9); return q(`4 × ${b} = ?`, 4*b); },
         () => { const b=rand(1,9); return q(`6 × ${b} = ?`, 6*b); },
@@ -107,12 +115,11 @@ export class MathQuestionGenerator {
       ],
     };
     if (category === 'all') return Object.values(pools).flat();
-    return pools[category] || pools.basic;
+    return pools[category] ?? pools.basic;
   }
 
-  // ─── 3~4학년 ──────────────────────────────────────────────────
-  _pool34(category) {
-    const pools = {
+  private _pool34(category: Specialty): QuestionFactory[] {
+    const pools: Pool = {
       basic: [
         () => { const a=rand(15,80), b=rand(10,99-a); return q(`${a} + ${b} = ?`, a+b); },
         () => { const a=rand(30,99), b=rand(10,a-5); return q(`${a} - ${b} = ?`, a-b); },
@@ -150,12 +157,11 @@ export class MathQuestionGenerator {
       ],
     };
     if (category === 'all') return Object.values(pools).flat();
-    return pools[category] || pools.basic;
+    return pools[category] ?? pools.basic;
   }
 
-  // ─── 5~6학년 ──────────────────────────────────────────────────
-  _pool56(category) {
-    const pools = {
+  private _pool56(category: Specialty): QuestionFactory[] {
+    const pools: Pool = {
       basic: [
         () => { const a=rand(100,500), b=rand(100,500); return q(`${a} + ${b} = ?`, a+b); },
         () => { const a=rand(300,999), b=rand(100,a-50); return q(`${a} - ${b} = ?`, a-b); },
@@ -191,12 +197,12 @@ export class MathQuestionGenerator {
       ],
     };
     if (category === 'all') return Object.values(pools).flat();
-    return pools[category] || pools.basic;
+    return pools[category] ?? pools.basic;
   }
 }
 
-function q(question, answer) { return { question, answer }; }
-function rand(min, max) { return Math.floor(Math.random() * (max - min + 1)) + min; }
-function pick(arr) { return arr[Math.floor(Math.random() * arr.length)]; }
-function gcd(a, b) { return b === 0 ? a : gcd(b, a % b); }
-function lcm(a, b) { return a * b / gcd(a, b); }
+function q(question: string, answer: number): Question { return { question, answer }; }
+function rand(min: number, max: number): number { return Math.floor(Math.random() * (max - min + 1)) + min; }
+function pick<T>(arr: T[]): T { return arr[Math.floor(Math.random() * arr.length)]; }
+function gcd(a: number, b: number): number { return b === 0 ? a : gcd(b, a % b); }
+function lcm(a: number, b: number): number { return a * b / gcd(a, b); }
