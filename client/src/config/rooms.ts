@@ -121,18 +121,19 @@ export const ROOM_CONFIG: Record<RoomKey, RoomConfig> = {
   5: {
     bg: 'room5-bg',
     chapter: 2,
-    playerStart: { x: 400, y: 320 },
-    // 다리 우측 끝
-    exit: { x: 640, y: 320, radius: 45, label: '구름 위로 ▶' },
+    // ① 다리 우측 끝에서 시작
+    playerStart: { x: 640, y: 320 },
+    // ② 모든 몹 처치 후 다리 좌측 끝에 문이 생김
+    exit: { x: 140, y: 320, radius: 45, label: '구름 위로 ◀' },
     nextRoom: 6,
-    // 다리 평평한 윗면 띠 영역 (좁고 가로로 김)
-    playerBounds: { minX: 150, maxX: 650, minY: 290, maxY: 355 },
-    patrolBounds: { minX: 180, maxX: 620, minY: 300, maxY: 345 },
+    // 다리 평평한 윗면 띠 영역 (좌우 끝까지 다 사용)
+    playerBounds: { minX: 110, maxX: 670, minY: 290, maxY: 355 },
+    patrolBounds: { minX: 150, maxX: 580, minY: 300, maxY: 345 },
     monsters: [
       { x: 220, y: 310, type: 'slime' },
-      { x: 560, y: 310, type: 'goblin' },
-      { x: 300, y: 340, type: 'orc' },
-      { x: 480, y: 340, type: 'witch' },
+      { x: 380, y: 310, type: 'orc' },
+      { x: 510, y: 310, type: 'goblin' },
+      { x: 300, y: 345, type: 'witch' },
     ],
   },
   6: {
