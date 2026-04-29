@@ -9,7 +9,7 @@ import {
   type Grade,
   type MonsterTypeOrBoss,
 } from '../quests/MathQuestions';
-import { ROOM_CONFIG, ROOM_ORDER, type RoomKey, type RoomConfig } from '../config/rooms';
+import { ROOM_CONFIG, type RoomKey, type RoomConfig } from '../config/rooms';
 import {
   PLAYER_SPEED, SELECT_RADIUS, ESCAPE_EXIT_BUFFER,
   EXP_PER_KILL, COIN_PER_HIT, EXP_LEVEL_GROWTH,
@@ -370,40 +370,6 @@ export default class MathScene extends Phaser.Scene {
       }).setOrigin(0.5).setDepth(21);
       this.hudHpHearts.push(heart);
     }
-
-    this._createSkipButton();
-  }
-
-  private _createSkipButton(): void {
-    const idx = ROOM_ORDER.indexOf(this.room);
-    const next = ROOM_ORDER[(idx + 1) % ROOM_ORDER.length];
-    const label = `▶ 다음 방 (${next})`;
-
-    const bg = this.add.rectangle(720, 48, 150, 22, 0x222266, 0.85)
-      .setStrokeStyle(1, 0x88aaff).setDepth(30);
-    this.add.text(720, 48, label, {
-      fontSize: '12px', color: '#ffffff',
-      fontFamily: 'monospace', fontStyle: 'bold',
-    }).setOrigin(0.5).setDepth(31);
-
-    bg.setInteractive({ useHandCursor: true });
-    bg.on('pointerover', () => bg.setFillStyle(0x4466aa, 0.95));
-    bg.on('pointerout',  () => bg.setFillStyle(0x222266, 0.85));
-    bg.on('pointerdown', () => this._skipToRoom(next));
-  }
-
-  private _skipToRoom(room: RoomKey): void {
-    if (this.transitioning) return;
-    this.transitioning = true;
-    this.cameras.main.fadeOut(300, 0, 0, 0);
-    this.cameras.main.once('camerafadeoutcomplete', () => {
-      this.scene.start('MathScene', {
-        room,
-        stats: this.stats,
-        grade: this.grade,
-        fromRoom: typeof room === 'string' ? this.room : null,
-      } as SceneData);
-    });
   }
 
   private _refreshHUD(): void {
