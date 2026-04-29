@@ -139,23 +139,30 @@ export const ROOM_CONFIG: Record<RoomKey, RoomConfig> = {
   6: {
     bg: 'room6-bg',
     chapter: 2,
-    playerStart: { x: 400, y: 480 },
-    exit: { x: 730, y: 310, radius: 55, label: '천공성으로 ▶' },
-    secretExit: { x: 400, y: 155, radius: 70, label: '✨ 별의 보물방 ✨' },
+    // ① 평지 한가운데서 시작
+    playerStart: { x: 400, y: 230 },
+    // 평지 우측 가장자리에 다음 방 출구
+    exit: { x: 650, y: 230, radius: 50, label: '천공성으로 ▶' },
+    // 평지 상단에 비밀의 보물방 출구
+    secretExit: { x: 400, y: 130, radius: 55, label: '✨ 별의 보물방 ✨' },
     nextRoom: 7,
     secretRoom: 'treasure2',
+    // 부유섬 평지(돌길/잔디) 영역만 통행
+    playerBounds: { minX: 130, maxX: 670, minY: 110, maxY: 460 },
+    patrolBounds: { minX: 170, maxX: 630, minY: 150, maxY: 420 },
     monsters: [
-      { x: 220, y: 300, type: 'witch' },
-      { x: 580, y: 300, type: 'skeleton' },
-      { x: 220, y: 450, type: 'orc' },
-      { x: 580, y: 450, type: 'goblin' },
+      { x: 240, y: 200, type: 'witch' },
+      { x: 560, y: 200, type: 'skeleton' },
+      { x: 240, y: 380, type: 'orc' },
+      { x: 560, y: 380, type: 'goblin' },
     ],
   },
   treasure2: {
     bg: 'treasure2-bg',
     chapter: 2,
-    playerStart: { x: 400, y: 400 },
-    exit: { x: 72, y: 300, radius: 60, label: '천공으로 ◀' },
+    playerStart: { x: 400, y: 420 },
+    // ① 상단 중앙 — 천공성으로 가는 통로
+    exit: { x: 400, y: 110, radius: 55, label: '천공성으로 ▲' },
     isTreasureRoom: true,
     pedestal: { x: 400, y: 270, radius: 55 },
     nextRoom: 7,
