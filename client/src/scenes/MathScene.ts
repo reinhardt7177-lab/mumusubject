@@ -169,10 +169,77 @@ export default class MathScene extends Phaser.Scene {
       this.cameras.main.fadeIn(600);
       this._startGame(this.urlGrade ?? this.grade);
     } else {
-      this.gradeUI = showGradeSelector(this, (grade) => this._startGame(grade));
+      this._showTitleSplash();
     }
 
     addFullscreenButton(this);
+  }
+
+  private _showTitleSplash(): void {
+    const c = this.add.container(0, 0).setDepth(50);
+
+    // 배경 이미지 (게임 캔버스 풀)
+    c.add(this.add.image(400, 300, 'game-main').setDisplaySize(800, 600));
+
+    // 상단 어두운 그라디언트 (제목 가독성)
+    c.add(this.add.rectangle(400, 60, 800, 120, 0x0a0a1a, 0.45));
+
+    // 게임 타이틀
+    c.add(this.add.text(400, 50, '⚔ 수학 마법사의 탑 ⚔', {
+      fontSize: '36px',
+      color: '#FFD700',
+      stroke: '#000',
+      strokeThickness: 6,
+      fontFamily: 'monospace',
+      fontStyle: 'bold',
+    }).setOrigin(0.5));
+
+    // 부제
+    c.add(this.add.text(400, 92, '교육용 JRPG · 1~6학년', {
+      fontSize: '15px',
+      color: '#dddddd',
+      stroke: '#000',
+      strokeThickness: 3,
+      fontFamily: 'monospace',
+    }).setOrigin(0.5));
+
+    // 하단 안내
+    c.add(this.add.rectangle(400, 555, 800, 50, 0x0a0a1a, 0.55));
+    const startHint = this.add.text(400, 555, '▶ 클릭해서 시작', {
+      fontSize: '22px',
+      color: '#ffffff',
+      stroke: '#000',
+      strokeThickness: 4,
+      fontFamily: 'monospace',
+      fontStyle: 'bold',
+    }).setOrigin(0.5);
+    c.add(startHint);
+
+    this.tweens.add({
+      targets: startHint,
+      alpha: 0.4,
+      duration: 700,
+      yoyo: true,
+      repeat: -1,
+      ease: 'Sine.easeInOut',
+    });
+
+    // 클릭 처리 (전체 영역)
+    const hit = this.add.rectangle(400, 300, 800, 600, 0x000000, 0)
+      .setInteractive({ useHandCursor: true });
+    c.add(hit);
+
+    hit.once('pointerdown', () => {
+      this.tweens.add({
+        targets: c,
+        alpha: 0,
+        duration: 400,
+        onComplete: () => {
+          c.destroy(true);
+          this.gradeUI = showGradeSelector(this, (grade) => this._startGame(grade));
+        },
+      });
+    });
   }
 
   private _startGame(grade: Grade): void {

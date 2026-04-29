@@ -9,6 +9,9 @@ export default class BootScene extends Phaser.Scene {
   }
 
   preload(): void {
+    // 타이틀 메인
+    this.load.image('game-main', '/assets/game-main-800x600.jpg');
+
     // 챕터 1
     this.load.image('room1-bg', '/assets/math-bg.jpg');
     this.load.image('room2-bg', '/assets/room2-bg.jpg');
