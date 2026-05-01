@@ -24,7 +24,13 @@ import { Joystick } from '../ui/Joystick';
 import { addFullscreenButton } from '../ui/FullscreenButton';
 import { showGradeSelector } from '../ui/GradeSelector';
 import { showGameOver, showGameClear } from '../ui/EndScreens';
+import { showLoginForm } from '../ui/LoginForm';
+import { showLeaderboard } from '../ui/Leaderboard';
 import { floatText, showExpBurst, hitShake, createDustEmitter } from '../utils/effects';
+import { auth } from '../firebase/config';
+import { loginOrSignUp } from '../firebase/auth';
+import { ensureUserProfile, saveProgress, getLeaderboard } from '../firebase/userStore';
+import { getProfile, setProfile } from '../firebase/session';
 
 interface SceneData {
   room?: RoomKey;
@@ -109,13 +115,21 @@ export default class MathScene extends Phaser.Scene {
   private pedestalUsed: boolean = false;
   private pedestalChallenge: PedestalChallenge | null = null;
 
+  // Firestore 저장 디바운스
+  private _saveTimer: number | null = null;
+
   constructor() {
     super('MathScene');
   }
 
   init(data: SceneData): void {
     this.room          = data.room  ?? 1;
-    this.stats         = data.stats ?? { ...DEFAULT_STATS };
+    if (data.stats) {
+      this.stats = data.stats;
+    } else {
+      const p = getProfile();
+      this.stats = { ...DEFAULT_STATS, coins: p?.coins ?? 0 };
+    }
     this.grade         = data.grade ?? this._gradeFromURL() ?? GRADES.G12;
     this.fromRoom      = !!data.room;
     this.urlGrade      = !data.room ? this._gradeFromURL() : null;
@@ -168,6 +182,13 @@ export default class MathScene extends Phaser.Scene {
     if (this.fromRoom || this.urlGrade) {
       this.cameras.main.fadeIn(600);
       this._startGame(this.urlGrade ?? this.grade);
+    } else if (getProfile()) {
+      // 같은 세션 내 재시작 (게임오버/클리어 후) — 로그인 건너뛰고 학년 선택만
+      this.gradeUI = showGradeSelector(
+      this,
+      (grade) => this._startGame(grade),
+      () => this._openLeaderboard(),
+    );
     } else {
       this._showTitleSplash();
     }
@@ -236,10 +257,41 @@ export default class MathScene extends Phaser.Scene {
         duration: 400,
         onComplete: () => {
           c.destroy(true);
-          this.gradeUI = showGradeSelector(this, (grade) => this._startGame(grade));
+          this._loginThenShowGradeSelector();
         },
       });
     });
+  }
+
+  private async _openLeaderboard(): Promise<void> {
+    const profile = getProfile();
+    if (!profile) return;
+    const u = auth.currentUser;
+    await showLeaderboard(
+      profile.classCode,
+      getLeaderboard(profile.classCode, 20),
+      u?.uid ?? null,
+    );
+  }
+
+  private async _loginThenShowGradeSelector(): Promise<void> {
+    await showLoginForm(async (input) => {
+      try {
+        const { user } = await loginOrSignUp(input.name, input.classCode, input.password);
+        const profile = await ensureUserProfile(user.uid, input.name, input.classCode);
+        setProfile(profile);
+        // 누적 디스코인을 stats에 반영 (학년 선택 화면에서 보일 수 있도록)
+        this.stats.coins = profile.coins;
+        return null;
+      } catch (e) {
+        return e instanceof Error ? e.message : '로그인에 실패했어요. 잠시 후 다시 시도해주세요.';
+      }
+    });
+    this.gradeUI = showGradeSelector(
+      this,
+      (grade) => this._startGame(grade),
+      () => this._openLeaderboard(),
+    );
   }
 
   private _startGame(grade: Grade): void {
@@ -385,6 +437,42 @@ export default class MathScene extends Phaser.Scene {
     this.hudHpHearts.forEach((heart, i) => {
       heart.setColor(i < this.stats.hp ? '#ff4444' : '#444444');
     });
+
+    this._scheduleSave();
+  }
+
+  private _scheduleSave(): void {
+    const u = auth.currentUser;
+    if (!u) return;
+    if (this._saveTimer !== null) window.clearTimeout(this._saveTimer);
+    const coins = this.stats.coins;
+    const level = this.stats.level;
+    this._saveTimer = window.setTimeout(() => {
+      this._saveTimer = null;
+      void saveProgress(u.uid, { coins, level }).catch(() => {});
+    }, 1500);
+  }
+
+  private async _saveImmediate(patch: { cleared?: boolean } = {}): Promise<void> {
+    const u = auth.currentUser;
+    if (!u) return;
+    if (this._saveTimer !== null) {
+      window.clearTimeout(this._saveTimer);
+      this._saveTimer = null;
+    }
+    try {
+      await saveProgress(u.uid, {
+        coins: this.stats.coins,
+        level: this.stats.level,
+        ...patch,
+      });
+      const profile = getProfile();
+      if (profile) {
+        profile.coins = this.stats.coins;
+        if (this.stats.level > (profile.bestLevel ?? 1)) profile.bestLevel = this.stats.level;
+        if (patch.cleared) profile.cleared = true;
+      }
+    } catch {}
   }
 
   private _createProblemPanel(): void {
@@ -1202,6 +1290,7 @@ export default class MathScene extends Phaser.Scene {
       this.battleOverlayGroup.destroy(true);
       this.battleOverlayGroup = null;
     }
+    void this._saveImmediate();
     showGameOver(this, this.stats, () => {
       this.cameras.main.fadeOut(600);
       this.cameras.main.once('camerafadeoutcomplete', () => {
@@ -1212,6 +1301,7 @@ export default class MathScene extends Phaser.Scene {
 
   private _gameClear(): void {
     this.gameStarted = false;
+    void this._saveImmediate({ cleared: true });
     showGameClear(this, this.stats, this.bgImg ?? null, () => {
       this.cameras.main.fadeOut(600);
       this.cameras.main.once('camerafadeoutcomplete', () => {

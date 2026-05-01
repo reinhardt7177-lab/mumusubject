@@ -18,6 +18,7 @@ const OPTIONS: GradeOption[] = [
 export function showGradeSelector(
   scene: Phaser.Scene,
   onSelect: (grade: Grade) => void,
+  onLeaderboard?: () => void,
 ): Phaser.GameObjects.Container {
   const ui = scene.add.container(0, 0).setDepth(50);
 
@@ -58,6 +59,24 @@ export function showGradeSelector(
 
     ui.add([btn, lbl, dsc]);
   });
+
+  if (onLeaderboard) {
+    const lbBtn = scene.add.rectangle(400, 530, 240, 38, 0x442266, 0.92)
+      .setStrokeStyle(2, 0xaa66ff, 0.8)
+      .setInteractive({ useHandCursor: true });
+    const lbText = scene.add.text(400, 530, '🏆 우리 학급 랭킹', {
+      fontSize: '16px',
+      color: '#ffddff',
+      fontFamily: 'monospace',
+      fontStyle: 'bold',
+    }).setOrigin(0.5);
+
+    lbBtn.on('pointerover', () => lbBtn.setFillStyle(0x663399, 0.95));
+    lbBtn.on('pointerout',  () => lbBtn.setFillStyle(0x442266, 0.92));
+    lbBtn.on('pointerdown', () => onLeaderboard());
+
+    ui.add([lbBtn, lbText]);
+  }
 
   return ui;
 }

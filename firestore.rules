@@ -1,0 +1,49 @@
+rules_version = '2';
+
+// mumusubject Firestore 보안 규칙
+// 적용: Firebase Console → Firestore Database → 규칙 탭에 붙여넣고 게시
+//
+// 정책 요약:
+// - 로그인한 사용자만 모든 users 문서를 읽을 수 있음 (학급 랭킹 조회 가능)
+// - 자기 자신의 문서만 생성/수정 가능 (uid 일치 필수)
+// - 삭제는 누구도 불가 (관리자가 콘솔에서만)
+// - 필드 검증: name, classCode 길이/타입 체크, coins/level 음수 방지
+//
+// 학급 랭킹 쿼리는 classCode 필터 + coins desc 정렬을 사용. 인덱스 자동 생성됨.
+
+service cloud.firestore {
+  match /databases/{database}/documents {
+
+    match /users/{uid} {
+      // 모든 로그인 사용자가 읽기 가능 (랭킹 조회용)
+      allow read: if request.auth != null;
+
+      // 자기 자신의 문서만 생성 가능
+      allow create: if request.auth != null
+        && request.auth.uid == uid
+        && request.resource.data.uid == uid
+        && validUser(request.resource.data);
+
+      // 자기 자신의 문서만 수정 가능
+      allow update: if request.auth != null
+        && request.auth.uid == uid
+        && request.resource.data.uid == uid
+        && validUser(request.resource.data);
+
+      // 삭제 금지
+      allow delete: if false;
+    }
+
+    // 그 외 경로는 모두 차단
+    match /{document=**} {
+      allow read, write: if false;
+    }
+  }
+}
+
+function validUser(d) {
+  return d.name is string && d.name.size() > 0 && d.name.size() <= 20
+    && d.classCode is string && d.classCode.size() > 0 && d.classCode.size() <= 30
+    && d.coins is number && d.coins >= 0
+    && d.level is number && d.level >= 1 && d.level <= 999;
+}
